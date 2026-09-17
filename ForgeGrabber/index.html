@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ForgeGrabber AI OS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #050505;
+            color: #f2f2f2;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-rows: 56px 1fr;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main";
+            height: 100vh;
+        }
+
+        header {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 18px;
+            background: #0d0d0d;
+            border-bottom: 1px solid rgba(255, 120, 0, 0.35);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 120, 0, 0.7);
+            object-fit: cover;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo span {
+            font-weight: 600;
+            color: #ffa34d;
+            font-size: 15px;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .clock {
+            font-size: 13px;
+            color: #ffa34d;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .session-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 120, 0, 0.18);
+            border: 1px solid rgba(255, 120, 0, 0.35);
+            font-size: 11px;
+            color: #ffb347;
+        }
+
+        .session-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff7a18;
+            box-shadow: 0 0 10px rgba(255, 120, 0, 0.9);
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .logout-button {
+            background: linear-gradient(90deg, #ff7a18, #ffb347);
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #111;
+        }
+
+        .logout-button:hover {
+            opacity: 0.9;
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: #080808;
+            border-right: 1px solid rgba(255, 120, 0, 0.25);
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .nav-group {
+            margin-bottom: 10px;
+        }
+
+        .nav-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-item:hover {
+            background: #141414;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, #ff7a18, #ffb347);
+            color: #111;
+            font-weight: 600;
+        }
+
+        .nav-pill {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: #141414;
+            color: #ccc;
+        }
+
+        .nav-pill.accent {
+            background: rgba(255, 120, 0, 0.18);
+            color: #ffb347;
+        }
+
+        main {
+            grid-area: main;
+            padding: 16px 18px 40px;
+            overflow-y: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: #0b0b0b;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 12px 14px;
+        }
+#activatePanel .card {
+    max-width: 420px;
+    margin-left: 0; /* optional: keeps it aligned left */
+}
+#activatePanel {
+    display: flex;
+    justify-content: center;
+}
+#activatePanel {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+.quick-actions button {
+    width: 100%;
+    max-width: 220px;      /* matches card width */
+    padding: 10px 14px;    /* compact height */
+    font-size: 14px;       /* smaller text */
+    border-radius: 6px;    /* clean ForgeCore style */
+    margin: 6px auto;      /* centers buttons */
+    display: block;        /* ensures alignment */
+}
+
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f5f5f5;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .pill {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #141414;
+            color: #ccc;
+        }
+
+        .pill.accent {
+            background: rgba(255, 120, 0, 0.18);
+            color: #ffb347;
+        }
+
+        .run-button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 7px 0;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(90deg, #ff7a18, #ffb347);
+            color: #111;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .run-button:hover {
+            opacity: 0.9;
+        }
+
+        .footer-strip {
+            margin-top: 14px;
+            font-size: 11px;
+            color: #777;
+        }
+
+        .footer-strip span {
+            color: #ffa34d;
+        }
+
+        /* OS panels */
+
+        .panel {
+            display: none;
+            background: #0b0b0b;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 12px 16px;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .panel-sub {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .panel-body {
+            margin-top: 10px;
+        }
+
+        .placeholder-note {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .app-footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: #080808;
+            border-top: 1px solid rgba(255, 120, 0, 0.25);
+            text-align: center;
+            padding: 6px 10px;
+            font-size: 11px;
+            color: #777;
+            z-index: 50;
+        }
+
+        .app-footer span {
+            color: #ffa34d;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                grid-template-columns: 1fr;
+                grid-template-rows: 56px auto auto;
+                grid-template-areas:
+                    "header"
+                    "sidebar"
+                    "main";
+            }
+        }
+		.card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffa34d; /* Amber brand */
+}
+
+.panel-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffa34d; /* Amber brand */
+}
+
+.card-sub,
+.panel-sub,
+.placeholder-note {
+    color: #ffb347; /* Softer amber */
+}
+.activated {
+    border: 1px solid rgba(255, 120, 0, 0.45);
+    box-shadow: 0 0 12px rgba(255, 120, 0, 0.35);
+}
+
+.activated-message {
+    color: #ffa34d;
+    font-size: 12px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="/images/logos/forgecore-logo.png" alt="ForgeCore Industries Logo">
+        <div class="logo-text">
+            <span>ForgeGrabber AI OS</span>
+            <div class="logo-sub">Powered by ForgeCore Industries™</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="clock" id="fgClock">--:--</div>
+        <div class="session-indicator">
+            <div class="session-dot"></div>
+            <span>Session Active</span>
+        </div>
+       <button id="logoutButton" class="logout-button" type="button">Logout</button>
+    </div>
+</header>
+<aside class="sidebar">
+   
+    <div class="nav-group">
+        <div class="sidebar-title">Core Engines</div>
+        <div class="nav-item" data-target="homePanel">
+            <span>Home Dashboard</span>
+            <span class="nav-pill accent">OS</span>
+        </div>
+        <div class="nav-item" data-target="fcScannerPanel">
+            <span>
+			Scanner</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="scoringPanel">
+            <span>Scoring</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="mockupsPanel">
+            <span>Mockups</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="outreachPanel">
+            <span>Outreach</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="followupsPanel">
+            <span>Follow-Ups</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="autopilotPanel">
+            <span>Autopilot</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="analyticsPanel">
+            <span>Analytics</span>
+            <span class="nav-pill">Engine</span>
+        </div>
+        <div class="nav-item" data-target="leadScannerPanel">
+    <span>Lead Scanner</span>
+    <span class="nav-pill">Engine</span>
+    </div>
+
+    </div>
+
+    <div class="nav-group">
+        <div class="sidebar-title">Channels</div>
+        <div class="nav-item" data-target="instagramPanel">
+            <span>Instagram</span>
+            <span class="nav-pill">Channel</span>
+        </div>
+        <div class="nav-item" data-target="tiktokPanel">
+            <span>TikTok</span>
+            <span class="nav-pill">Channel</span>
+        </div>
+        <div class="nav-item" data-target="etsyPanel">
+            <span>Etsy</span>
+            <span class="nav-pill">Channel</span>
+        </div>
+        <div class="nav-item" data-target="shopifyPanel">
+            <span>Shopify</span>
+            <span class="nav-pill">Channel</span>
+        </div>
+        <div class="nav-item" data-target="youtubePanel">
+    <span>YouTube</span>
+    <span class="nav-pill">Channel</span>
+    </div>
+
+    </div>
+</aside>
+
+<main>
+    <!-- Activate ForgeGrabber -->
+    <section class="panel active" id="activatePanel">
+      <div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">ForgeCore Activation Key</div>
+            <div class="card-sub">Required to enable all engines and channels.</div>
+        </div>
+        <div class="pill-row">
+            <div class="pill accent">Required</div>
+            <div class="pill">System</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <input
+            type="text"
+            id="fgActivationKey"
+            placeholder="Paste KeyMaker key"
+            style="
+                width: 100%;
+                padding: 6px 10px;
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: #141414;
+                color: #ffa34d;
+                font-size: 12px;
+            "
+        />
+
+        <button
+            class="run-button"
+            type="button"
+            style="margin-top: 10px;"
+            id="fgSaveKeyButton"
+        >
+            Save Activation Key
+        </button>
+
+        <p class="placeholder-note" style="margin-top: 8px;">
+            Generated by ForgeCore KeyMaker. Required for full OS access.
+        </p>
+    </div>
+</div>
+
+        </div>
+    </section>
+
+    <!-- Home Dashboard -->
+   
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">FC Scanner</div>
+                        <div class="card-sub">Lead intake & scanning</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">New leads</div>
+                    <div class="pill">Scan queue</div>
+                    <div class="pill">Status</div>
+                </div>
+                <button class="run-button" data-target="fcScannerPanel">Open FC Scanner Engine</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Scoring</div>
+                        <div class="card-sub">Lead scoring engine</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Priority tiers</div>
+                    <div class="pill">Conversion bands</div>
+                    <div class="pill">Rules</div>
+                </div>
+                <button class="run-button" data-target="scoringPanel">Open Scoring Engine</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Mockups</div>
+                        <div class="card-sub">Offer & creative mockups</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Variants</div>
+                    <div class="pill">Previews</div>
+                    <div class="pill">Approval</div>
+                </div>
+                <button class="run-button" data-target="mockupsPanel">Open Mockups Engine</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Outreach</div>
+                        <div class="card-sub">Messaging & campaigns</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Sequences</div>
+                    <div class="pill">Templates</div>
+                    <div class="pill">Queues</div>
+                </div>
+                <button class="run-button" data-target="outreachPanel">Open Outreach Engine</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Follow-Ups</div>
+                        <div class="card-sub">Nurture & reminders</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Touchpoints</div>
+                    <div class="pill">Escalation</div>
+                    <div class="pill">Sequences</div>
+                </div>
+                <button class="run-button" data-target="followupsPanel">Open Follow-Ups Engine</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Autopilot</div>
+                        <div class="card-sub">Automation & scheduling</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Rules</div>
+                    <div class="pill">Schedules</div>
+                    <div class="pill">Triggers</div>
+                </div>
+                <button class="run-button" data-target="autopilotPanel">Open Autopilot Engine</button>
+            </div>
+
+     <div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Analytics</div>
+            <div class="card-sub">Performance & reporting</div>
+        </div>
+    </div>
+
+    <div class="pill-row">
+        <div class="pill accent">Funnels</div>
+        <div class="pill">Metrics</div>
+        <div class="pill">Reports</div>
+    </div>
+
+    <button class="run-button" data-target="analyticsPanel">
+        Open Analytics Engine
+    </button>
+</div>
+
+     <div class="card">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Lead Scanner</div>
+            <div class="card-sub">Deep scanning & enrichment</div>
+        </div>
+        <div class="pill-row">
+            <div class="pill">Engine</div>
+        </div>
+    </div>
+
+    <div class="card-actions">
+        <button class="run-button" data-target="leadScannerPanel">
+            Open Lead Scanner Engine
+        </button>
+    </div>
+</div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Channels</div>
+                        <div class="card-sub">Instagram · TikTok · Etsy · Shopify · YouTube</div>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <div class="pill accent">Social</div>
+                    <div class="pill">Commerce</div>
+                    <div class="pill">Video</div>
+                </div>
+                <button class="run-button" data-target="channelsPanel">Open Channels Engine</button>
+            </div>
+        </div>
+        <div class="footer-strip">
+            ForgeGrabber AI OS · <span>ForgeCore Industries™ Command Platform</span>
+        </div>
+    </section>
+
+    <!-- FC Scanner -->
+<section class="panel" id="fcScannerPanel">
+    <div class="panel-header">
+        <div class="panel-title">FC Scanner Engine</div>
+        <div class="panel-sub">Lead intake, scanning, and initial classification.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Scanner Controls Card (existing) -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Scanner Controls</div>
+                    <div class="card-sub">Manage lead intake and scanning operations.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="fcNewLeadsBtn">New Leads</button>
+                <button class="run-button" id="fcScanQueueBtn">Scan Queue</button>
+                <button class="run-button" id="fcStatusBtn">Status</button>
+                <button class="run-button" id="fcScannerAiBtn">Run AI Scan</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your FC Scanner inputs, tables, and controls will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- ⭐ NEW: ForgeGrabber Controls Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">ForgeGrabber Controls</div>
+                    <div class="card-sub">Direct commands to the ForgeGrabber engine.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="fgPingBtn">Ping ForgeGrabber</button>
+                <button class="run-button" id="fgGrabBtn">Run Grab Task</button>
+                <button class="run-button" id="fgStatusBtn">Check Status</button>
+                <button class="run-button" id="fgResultsBtn">Get Results</button>
+            </div>
+
+            <p class="placeholder-note">
+                ForgeGrabber engine commands will output below.
+            </p>
+        </div>
+
+        <!-- Scanner Output Card (existing) -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Scanner Output</div>
+                    <div class="card-sub">Live engine results and logs.</div>
+                </div>
+            </div>
+
+            <div id="fcScannerOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+
+    <!-- Scoring -->
+    <section class="panel" id="scoringPanel">
+    <div class="panel-header">
+        <div class="panel-title">Scoring Engine</div>
+        <div class="panel-sub">Lead scoring, tiers, and prioritization.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Scoring Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Scoring Controls</div>
+                    <div class="card-sub">Adjust scoring logic and evaluate leads.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="scoreLeadBtn">Score Lead</button>
+                <button class="run-button" id="scoreRulesBtn">Rules</button>
+                <button class="run-button" id="scoreBandsBtn">Bands</button>
+				<button class="run-button" id="scoringAiBtn">AI Score Lead</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your scoring sliders, weights, tables, and outputs will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Scoring Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Scoring Output</div>
+                    <div class="card-sub">Live scoring results and logs.</div>
+                </div>
+            </div>
+
+            <div id="scoringOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting scoring commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Mockups -->
+    <section class="panel" id="mockupsPanel">
+    <div class="panel-header">
+        <div class="panel-title">Mockups Engine</div>
+        <div class="panel-sub">Offer, creative, and content mockups.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Mockup Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Mockup Controls</div>
+                    <div class="card-sub">Generate previews, variants, and creative mockups.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="mockupVariantsBtn">Variants</button>
+                <button class="run-button" id="mockupPreviewsBtn">Previews</button>
+                <button class="run-button" id="mockupApprovalBtn">Approval</button>
+				<button class="run-button" id="mockupsAiBtn">Generate AI Creative</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your mockup previews, variants, and controls will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Mockup Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Mockup Output</div>
+                    <div class="card-sub">Live mockup results and logs.</div>
+                </div>
+            </div>
+
+            <div id="mockupsOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting mockup commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Outreach -->
+    <section class="panel" id="outreachPanel">
+    <div class="panel-header">
+        <div class="panel-title">Outreach Engine</div>
+        <div class="panel-sub">Messaging, campaigns, and contact flows.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Outreach Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Outreach Controls</div>
+                    <div class="card-sub">Manage sequences, templates, and send queues.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="outreachSequencesBtn">Sequences</button>
+                <button class="run-button" id="outreachTemplatesBtn">Templates</button>
+                <button class="run-button" id="outreachQueueBtn">Queues</button>
+				<button class="run-button" id="outreachAiBtn">Run AI Outreach</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your outreach sequences, templates, and send queues will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Outreach Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Outreach Output</div>
+                    <div class="card-sub">Live outreach results and logs.</div>
+                </div>
+            </div>
+
+            <div id="outreachOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting outreach commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Follow-Ups -->
+    <section class="panel" id="followupsPanel">
+    <div class="panel-header">
+        <div class="panel-title">Follow-Ups Engine</div>
+        <div class="panel-sub">Nurture sequences and reminder flows.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Follow-Up Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Follow-Up Controls</div>
+                    <div class="card-sub">Build nurture ladders, reminders, and escalation flows.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="followupLadderBtn">Follow-Up Ladder</button>
+                <button class="run-button" id="followupReminderBtn">Reminder Map</button>
+                <button class="run-button" id="followupCadenceBtn">Touch Cadence</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your follow-up timelines, steps, and escalation logic will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Follow-Up Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Follow-Up Output</div>
+                    <div class="card-sub">Live follow-up results and logs.</div>
+                </div>
+            </div>
+
+            <div id="followupsOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting follow-up commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Autopilot -->
+   <section class="panel" id="autopilotPanel">
+    <div class="panel-header">
+        <div class="panel-title">Autopilot Engine</div>
+        <div class="panel-sub">Automation, scheduling, and autonomous workflows.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Autopilot Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Autopilot Controls</div>
+                    <div class="card-sub">Manage rules, schedules, and automation triggers.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="autopilotRulesBtn">Rules</button>
+                <button class="run-button" id="autopilotSchedulesBtn">Schedules</button>
+                <button class="run-button" id="autopilotTriggersBtn">Triggers</button>
+				<button class="run-button" id="autopilotAiBtn">AI Automation</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your automation rules, schedules, and triggers will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Autopilot Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Autopilot Output</div>
+                    <div class="card-sub">Live automation results and logs.</div>
+                </div>
+            </div>
+
+            <div id="autopilotOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting autopilot commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- Analytics -->
+  <section class="panel" id="analyticsPanel">
+    <div class="panel-header">
+        <div class="panel-title">Analytics Engine</div>
+        <div class="panel-sub">Performance, reporting, and trend analysis.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Analytics Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Analytics Controls</div>
+                    <div class="card-sub">View funnels, metrics, and reports.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="analyticsFunnelsBtn">Funnels</button>
+                <button class="run-button" id="analyticsMetricsBtn">Metrics</button>
+                <button class="run-button" id="analyticsReportsBtn">Reports</button>
+			   <button class="run-button" id="analyticsAiBtn">Run AI Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your analytics charts, funnels, and reporting UI will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Analytics Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Analytics Output</div>
+                    <div class="card-sub">Live analytics results and logs.</div>
+                </div>
+            </div>
+
+            <div id="analyticsOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting analytics commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+  <!-- Lead Scanner -->
+<section class="panel" id="leadScannerPanel">
+    <div class="panel-header">
+        <div class="panel-title">Lead Scanner Engine</div>
+        <div class="panel-sub">Deep scanning, enrichment, and signal extraction.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Lead Scanner Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Lead Scanner Controls</div>
+                    <div class="card-sub">Run deep scans, enrich leads, and extract signals.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="leadScanBtn">Deep Scan</button>
+                <button class="run-button" id="leadEnrichBtn">Enrich Lead</button>
+                <button class="run-button" id="leadSignalsBtn">Signals</button>
+                <button class="run-button" id="leadScannerAiBtn">Run AI Lead Scan</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your lead enrichment, scanning, and signal extraction UI will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Lead Scanner Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Lead Scanner Output</div>
+                    <div class="card-sub">Live scanner results and logs.</div>
+                </div>
+            </div>
+
+            <div id="leadScannerOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting lead scanner commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- Channels -->
+<section class="panel" id="channelsPanel">
+    <div class="panel-header">
+        <div class="panel-title">Channels Engine</div>
+        <div class="panel-sub">Platform routing, channel mapping, and distribution logic.</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Channels Controls Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Channels Controls</div>
+                    <div class="card-sub">Manage routing, platform selection, and distribution.</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="channelsMapBtn">Channel Map</button>
+                <button class="run-button" id="channelsRoutingBtn">Routing</button>
+                <button class="run-button" id="channelsDistributionBtn">Distribution</button>
+                <button class="run-button" id="channelsAiBtn">AI Channel Routing</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your channel routing, mapping, and distribution UI will be wired into this panel.
+            </p>
+        </div>
+
+        <!-- Channels Output Card -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Channels Output</div>
+                    <div class="card-sub">Live channel results and logs.</div>
+                </div>
+            </div>
+
+            <div id="channelsOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting channel commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- Instagram -->
+  <section class="panel" id="instagramPanel">
+    <div class="panel-header">
+        <div class="panel-title">Instagram Channel</div>
+        <div class="panel-sub">Content · Scheduling · Analytics</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Instagram Controls -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Instagram Controls</div>
+                    <div class="card-sub">Content tools & scheduling</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="igContentBtn">Content Tools</button>
+                <button class="run-button" id="igScheduleBtn">Scheduling</button>
+                <button class="run-button" id="igAnalyticsBtn">Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your Instagram content builder, scheduler, and analytics UI will appear here.
+            </p>
+        </div>
+
+        <!-- Instagram Output -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Instagram Output</div>
+                    <div class="card-sub">Live results & logs</div>
+                </div>
+            </div>
+
+            <div id="instagramOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting Instagram commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- TikTok -->
+  <section class="panel" id="tiktokPanel">
+    <div class="panel-header">
+        <div class="panel-title">TikTok Channel</div>
+        <div class="panel-sub">Reels · Scripts · Scheduling · Analytics</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- TikTok Controls -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">TikTok Controls</div>
+                    <div class="card-sub">Reel tools, scripts & scheduling</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="ttContentBtn">Reel Tools</button>
+                <button class="run-button" id="ttScriptBtn">Script Builder</button>
+                <button class="run-button" id="ttScheduleBtn">Scheduling</button>
+                <button class="run-button" id="ttAnalyticsBtn">Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your TikTok reel builder, script generator, scheduler, and analytics UI will appear here.
+            </p>
+        </div>
+
+        <!-- TikTok Output -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">TikTok Output</div>
+                    <div class="card-sub">Live results & logs</div>
+                </div>
+            </div>
+
+            <div id="tiktokOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting TikTok commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- Etsy -->
+   <section class="panel" id="etsyPanel">
+    <div class="panel-header">
+        <div class="panel-title">Etsy Channel</div>
+        <div class="panel-sub">Listings · SEO · Orders · Analytics</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Etsy Controls -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Etsy Controls</div>
+                    <div class="card-sub">Listing tools, SEO, and order management</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="etsyListingBtn">Listing Tools</button>
+                <button class="run-button" id="etsySeoBtn">SEO Optimizer</button>
+                <button class="run-button" id="etsyOrdersBtn">Order Manager</button>
+                <button class="run-button" id="etsyAnalyticsBtn">Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your Etsy listing builder, SEO optimizer, order manager, and analytics UI will appear here.
+            </p>
+        </div>
+
+        <!-- Etsy Output -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Etsy Output</div>
+                    <div class="card-sub">Live results & logs</div>
+                </div>
+            </div>
+
+            <div id="etsyOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting Etsy commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- Shopify -->
+   <section class="panel" id="shopifyPanel">
+    <div class="panel-header">
+        <div class="panel-title">Shopify Channel</div>
+        <div class="panel-sub">Products · Inventory · Orders · Analytics</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Shopify Controls -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Shopify Controls</div>
+                    <div class="card-sub">Product tools, inventory, and order management</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="shopifyProductsBtn">Product Tools</button>
+                <button class="run-button" id="shopifyInventoryBtn">Inventory Manager</button>
+                <button class="run-button" id="shopifyOrdersBtn">Order Manager</button>
+                <button class="run-button" id="shopifyAnalyticsBtn">Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your Shopify product builder, inventory manager, order system, and analytics UI will appear here.
+            </p>
+        </div>
+
+        <!-- Shopify Output -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Shopify Output</div>
+                    <div class="card-sub">Live results & logs</div>
+                </div>
+            </div>
+
+            <div id="shopifyOutput" class="
+			-output">
+                <p class="placeholder-note">Engine idle. Awaiting Shopify commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- YouTube (Placeholder) -->
+ <section class="panel" id="youtubePanel">
+    <div class="panel-header">
+        <div class="panel-title">YouTube Channel</div>
+        <div class="panel-sub">Videos · Scripts · Scheduling · Analytics</div>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- YouTube Controls -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">YouTube Controls</div>
+                    <div class="card-sub">Video tools, scripts, scheduling & analytics</div>
+                </div>
+            </div>
+
+            <div class="engine-controls">
+                <button class="run-button" id="ytContentBtn">Video Tools</button>
+                <button class="run-button" id="ytScriptBtn">Script Builder</button>
+                <button class="run-button" id="ytScheduleBtn">Scheduling</button>
+                <button class="run-button" id="ytAnalyticsBtn">Analytics</button>
+            </div>
+
+            <p class="placeholder-note">
+                Your YouTube video builder, script generator, scheduler, and analytics UI will appear here.
+            </p>
+        </div>
+
+        <!-- YouTube Output -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">YouTube Output</div>
+                    <div class="card-sub">Live results & logs</div>
+                </div>
+            </div>
+
+            <div id="youtubeOutput" class="engine-output">
+                <p class="placeholder-note">Engine idle. Awaiting YouTube commands.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+
+</main>
+
+<div class="app-footer">
+    ForgeCore Industries™ <span>Command Platform</span>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navItems = document.querySelectorAll('.nav-item');
+        const panels = document.querySelectorAll('.panel');
+        const runButtons = document.querySelectorAll('.run-button');
+
+        function setActivePanel(targetId) {
+            panels.forEach(panel => {
+                panel.classList.toggle('active', panel.id === targetId);
+            });
+        }
+
+        function setActiveNav(targetId) {
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.target === targetId);
+            });
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetId = item.dataset.target;
+                setActiveNav(targetId);
+                setActivePanel(targetId);
+            });
+        });
+
+        runButtons.forEach(btn => {
+            const targetId = btn.dataset.target;
+            if (!targetId) return;
+            btn.addEventListener('click', () => {
+                setActiveNav(targetId);
+                setActivePanel(targetId);
+            });
+        });
+
+        // Default: Activate ForgeGrabber
+        setActiveNav('activatePanel');
+        setActivePanel('activatePanel');
+    });
+    function updateClock() {
+        const clockEl = document.getElementById('fgClock');
+        if (!clockEl) return;
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clockEl.textContent = hours + ':' + minutes;
+    }
+
+    updateClock();
+    setInterval(updateClock, 30000);
+	document.getElementById('fgSaveKeyButton').addEventListener('click', () => {
+    const keyInput = document.getElementById('fgActivationKey');
+    const card = keyInput.closest('.card');
+
+    if (keyInput.value.trim() !== "") {
+        // Add activated styling
+        card.classList.add('activated');
+
+        // Replace input with activated message
+        keyInput.style.display = "none";
+
+        const msg = document.createElement('div');
+        msg.className = "activated-message";
+        msg.textContent = "Device Activated ✔";
+        keyInput.parentNode.insertBefore(msg, keyInput.nextSibling);
+
+        // Change button text
+        const btn = document.getElementById('fgSaveKeyButton');
+        btn.textContent = "Activated";
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+    }
+});
+/* -----------------------------------------------------------
+   FORGECORE AI — UNIFIED BACKEND CONNECTOR
+----------------------------------------------------------- */
+
+async function callForgeAI(engine, payload) {
+    try {
+        const response = await fetch("/api/forge-ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                app: "forgegrabber",
+                engine,
+                payload
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`AI error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return {
+            error: true,
+            message: "ForgeCore AI is unavailable or returned an error."
+        };
+    }
+}
+
+function resetActivation() {
+    const keyInput = document.getElementById('fgActivationKey');
+    const card = keyInput.closest('.card');
+    const btn = document.getElementById('fgSaveKeyButton');
+
+    // Remove activated styling
+    card.classList.remove('activated');
+
+    // Remove activated message
+    const msg = card.querySelector('.activated-message');
+    if (msg) msg.remove();
+
+    // Show input again
+    keyInput.style.display = "block";
+    keyInput.value = "";
+
+    // Restore button
+    btn.textContent = "Save Activation Key";
+    btn.disabled = false;
+    btn.style.opacity = "1";
+}
+document.getElementById("logoutButton").addEventListener("click", () => {
+    // Clear local activation/session
+    localStorage.removeItem("fgActivationKey");
+    sessionStorage.clear();
+
+    // Optional: clear cookies
+    document.cookie.split(";").forEach(cookie => {
+        document.cookie = cookie
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
+    });
+
+    // Redirect to login page
+    window.location.href = "../../app/login.html";
+});
+function openEngine(panelId) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const target = item.getAttribute('data-target');
+        openEngine(target);
+    });
+});
+const fcOutput = document.getElementById("fcScannerOutput");
+
+document.getElementById("fcNewLeadsBtn").onclick = () => {
+    fcOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Generating new leads...</div>
+        <div style="margin-top:8px;">• Pulling sources<br>• Classifying<br>• Preparing queue</div>
+    `;
+};
+
+document.getElementById("fcScanQueueBtn").onclick = () => {
+    fcOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Scanning queue...</div>
+        <div style="margin-top:8px;">• Checking statuses<br>• Running filters<br>• Updating records</div>
+    `;
+};
+
+document.getElementById("fcStatusBtn").onclick = () => {
+    fcOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Scanner Status</div>
+        <div style="margin-top:8px;">• Engine online<br>• Queue ready<br>• No errors detected</div>
+    `;
+};
+/* -----------------------------------------------------------
+   FC SCANNER — AI INTEGRATION
+----------------------------------------------------------- */
+
+const fcScannerOutput = document.getElementById("fcScannerOutput");
+
+document.getElementById("fcScannerAiBtn").onclick = async () => {
+    fcScannerOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running ForgeCore AI Scan...</div>
+        <div style="margin-top:8px;">
+            • Analyzing lead<br>
+            • Pulling signals<br>
+            • Generating summary
+        </div>
+    `;
+
+    const payload = {
+        lead: {
+            name: document.getElementById("leadName")?.value || "",
+            source: document.getElementById("leadSource")?.value || "",
+            notes: document.getElementById("leadNotes")?.value || ""
+        }
+    };
+
+    const result = await callForgeAI("fc_scanner", payload);
+
+    if (result.error) {
+        fcScannerOutput.innerHTML = `
+            <div style="color:#ff7a18;font-weight:600;">AI Error</div>
+            <div style="margin-top:8px;">
+                ${result.message}
+            </div>
+        `;
+        return;
+    }
+
+    fcScannerOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">AI Lead Scan Summary</div>
+        <div style="margin-top:8px;">
+            <strong>Summary:</strong> ${result.summary || "No summary provided."}<br><br>
+
+            <strong>Tags:</strong> ${(result.tags || []).join(", ") || "None"}<br><br>
+
+            <strong>Signals:</strong><br>
+            ${(result.signals || [])
+                .map(s => `• ${s}`)
+                .join("<br>") || "No signals detected."}
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   FORGEGRABBER ENGINE — DIRECT COMMANDS
+----------------------------------------------------------- */
+
+const fgOutput = document.getElementById("fcScannerOutput");
+
+// Helper: write to output
+function fgLog(message) {
+    fgOutput.innerHTML = `<p>${message}</p>`;
+}
+
+// 1. Ping ForgeGrabber
+document.getElementById("fgPingBtn").addEventListener("click", async () => {
+    fgLog("Pinging ForgeGrabber engine...");
+
+    try {
+        const res = await fetch("/api/forgegrabber/ping");
+        const data = await res.json();
+        fgLog(`Ping Response: ${data.message}`);
+    } catch (err) {
+        fgLog("Ping failed: " + err);
+    }
+});
+
+// 2. Run Grab Task
+document.getElementById("fgGrabBtn").addEventListener("click", async () => {
+    fgLog("Running Grab Task...");
+
+    try {
+        const res = await fetch("/api/forgegrabber/run-grab");
+        const data = await res.json();
+        fgLog(`Grab Task Started: ${data.status}`);
+    } catch (err) {
+        fgLog("Grab Task failed: " + err);
+    }
+});
+
+// 3. Check Status
+document.getElementById("fgStatusBtn").addEventListener("click", async () => {
+    fgLog("Checking ForgeGrabber status...");
+
+    try {
+        const res = await fetch("/api/forgegrabber/status");
+        const data = await res.json();
+        fgLog(`Status: ${data.state}`);
+    } catch (err) {
+        fgLog("Status check failed: " + err);
+    }
+});
+
+// 4. Get Results
+document.getElementById("fgResultsBtn").addEventListener("click", async () => {
+    fgLog("Fetching ForgeGrabber results...");
+
+    try {
+        const res = await fetch("/api/forgegrabber/results");
+        const data = await res.json();
+        fgLog(`Results:<br>${JSON.stringify(data.results, null, 2)}`);
+    } catch (err) {
+        fgLog("Results fetch failed: " + err);
+    }
+});
+
+
+const scoringOutput = document.getElementById("scoringOutput");
+
+document.getElementById("scoreLeadBtn").onclick = () => {
+    scoringOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Scoring lead...</div>
+        <div style="margin-top:8px;">
+            • Evaluating intent<br>
+            • Checking fit<br>
+            • Calculating final score
+        </div>
+    `;
+};
+
+document.getElementById("scoreRulesBtn").onclick = () => {
+    scoringOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Scoring Rules</div>
+        <div style="margin-top:8px;">
+            • Intent weight: 60%<br>
+            • Fit weight: 40%<br>
+            • Priority thresholds applied
+        </div>
+    `;
+};
+
+document.getElementById("scoreBandsBtn").onclick = () => {
+    scoringOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Conversion Bands</div>
+        <div style="margin-top:8px;">
+            • Tier A: 85–100<br>
+            • Tier B: 70–84<br>
+            • Tier C: 50–69<br>
+            • Tier D: 0–49
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   SCORING ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("scoringAiBtn").onclick = async () => {
+    scoringOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running AI Scoring...</div>
+        <div style="margin-top:8px;">
+            • Evaluating intent<br>
+            • Checking fit<br>
+            • Generating score
+        </div>
+    `;
+
+    const payload = {
+        lead: {
+            name: document.getElementById("leadName")?.value || "",
+            source: document.getElementById("leadSource")?.value || "",
+            notes: document.getElementById("leadNotes")?.value || ""
+        }
+    };
+
+    const result = await callForgeAI("scoring", payload);
+
+    if (result.error) {
+        scoringOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    scoringOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Lead Scoring</div>
+        <div style="margin-top:8px;">
+            <strong>Intent:</strong> ${result.intentScore ?? "N/A"} / 100<br>
+            <strong>Fit:</strong> ${result.fitScore ?? "N/A"} / 100<br>
+            <strong>Band:</strong> ${result.band || "Unclassified"}<br><br>
+            <strong>Reasoning:</strong><br>${result.reasoning || "None"}<br><br>
+            <strong>Next Action:</strong><br>${result.nextAction || "None"}
+        </div>
+    `;
+};
+
+
+const mockupsOutput = document.getElementById("mockupsOutput");
+
+document.getElementById("mockupVariantsBtn").onclick = () => {
+    mockupsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Generating mockup variants...</div>
+        <div style="margin-top:8px;">
+            • Creating offer variations<br>
+            • Rendering creative sets<br>
+            • Preparing export bundle
+        </div>
+    `;
+};
+
+document.getElementById("mockupPreviewsBtn").onclick = () => {
+    mockupsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Building previews...</div>
+        <div style="margin-top:8px;">
+            • Rendering feed previews<br>
+            • Generating story frames<br>
+            • Applying brand palette
+        </div>
+    `;
+};
+
+document.getElementById("mockupApprovalBtn").onclick = () => {
+    mockupsOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Approval Workflow</div>
+        <div style="margin-top:8px;">
+            • Packaging mockups<br>
+            • Preparing review set<br>
+            • Approval queue ready
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   MOCKUPS ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("mockupsAiBtn").onclick = async () => {
+    mockupsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Generating AI Creative...</div>
+        <div style="margin-top:8px;">
+            • Creating variations<br>
+            • Building ad copy<br>
+            • Preparing concepts
+        </div>
+    `;
+
+    const payload = {
+        product: document.getElementById("productName")?.value || "",
+        audience: document.getElementById("audienceType")?.value || ""
+    };
+
+    const result = await callForgeAI("mockups", payload);
+
+    if (result.error) {
+        mockupsOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    mockupsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Creative Concepts</div>
+        <div style="margin-top:8px;">
+            ${result.creatives?.map(c => `• ${c}`).join("<br>") || "No creative concepts generated."}
+        </div>
+    `;
+};
+
+
+const outreachOutput = document.getElementById("outreachOutput");
+
+document.getElementById("outreachSequencesBtn").onclick = () => {
+    outreachOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Building outreach sequences...</div>
+        <div style="margin-top:8px;">
+            • Mapping DM flow<br>
+            • Structuring email cadence<br>
+            • Preparing multi-touch sequence
+        </div>
+    `;
+};
+
+document.getElementById("outreachTemplatesBtn").onclick = () => {
+    outreachOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Loading templates...</div>
+        <div style="margin-top:8px;">
+            • Pulling message templates<br>
+            • Applying personalization<br>
+            • Formatting outreach blocks
+        </div>
+    `;
+};
+
+document.getElementById("outreachQueueBtn").onclick = () => {
+    outreachOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Send Queue</div>
+        <div style="margin-top:8px;">
+            • Reviewing pending sends<br>
+            • Checking delivery status<br>
+            • Queue ready for dispatch
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   OUTREACH ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("outreachAiBtn").onclick = async () => {
+    outreachOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Building AI Outreach...</div>
+        <div style="margin-top:8px;">
+            • Generating sequence<br>
+            • Personalizing message<br>
+            • Optimizing CTA
+        </div>
+    `;
+
+    const payload = {
+        lead: {
+            name: document.getElementById("leadName")?.value || "",
+            source: document.getElementById("leadSource")?.value || "",
+            notes: document.getElementById("leadNotes")?.value || ""
+        }
+    };
+
+    const result = await callForgeAI("outreach", payload);
+
+    if (result.error) {
+        outreachOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    outreachOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Outreach Sequence</div>
+        <div style="margin-top:8px;">
+            ${result.sequence?.map(step => `• ${step}`).join("<br>") || "No sequence generated."}
+        </div>
+    `;
+};
+
+const followupsOutput = document.getElementById("followupsOutput");
+
+document.getElementById("followupLadderBtn").onclick = () => {
+    followupsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Building follow-up ladder...</div>
+        <div style="margin-top:8px;">
+            • Mapping steps<br>
+            • Structuring escalation<br>
+            • Preparing nurture flow
+        </div>
+    `;
+};
+
+document.getElementById("followupReminderBtn").onclick = () => {
+    followupsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Generating reminder map...</div>
+        <div style="margin-top:8px;">
+            • Scheduling reminders<br>
+            • Assigning follow-up intervals<br>
+            • Preparing notification set
+        </div>
+    `;
+};
+
+document.getElementById("followupCadenceBtn").onclick = () => {
+    followupsOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Touch Cadence</div>
+        <div style="margin-top:8px;">
+            • Setting touch frequency<br>
+            • Applying channel mix<br>
+            • Cadence ready
+        </div>
+    `;
+};
+
+const autopilotOutput = document.getElementById("autopilotOutput");
+
+document.getElementById("autopilotRulesBtn").onclick = () => {
+    autopilotOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Loading automation rules...</div>
+        <div style="margin-top:8px;">
+            • Pulling rule sets<br>
+            • Evaluating conditions<br>
+            • Preparing automation map
+        </div>
+    `;
+};
+
+document.getElementById("autopilotSchedulesBtn").onclick = () => {
+    autopilotOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Building schedules...</div>
+        <div style="margin-top:8px;">
+            • Mapping time blocks<br>
+            • Assigning workflows<br>
+            • Schedule ready
+        </div>
+    `;
+};
+
+document.getElementById("autopilotTriggersBtn").onclick = () => {
+    autopilotOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Trigger System</div>
+        <div style="margin-top:8px;">
+            • Monitoring events<br>
+            • Checking conditions<br>
+            • Trigger engine online
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   AUTOPILOT ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("autopilotAiBtn").onclick = async () => {
+    autopilotOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Building AI Automation...</div>
+        <div style="margin-top:8px;">
+            • Generating rules<br>
+            • Mapping triggers<br>
+            • Optimizing workflow
+        </div>
+    `;
+
+    const payload = {
+        workflow: document.getElementById("workflowType")?.value || ""
+    };
+
+    const result = await callForgeAI("autopilot", payload);
+
+    if (result.error) {
+        autopilotOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    autopilotOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Automation Rules</div>
+        <div style="margin-top:8px;">
+            ${result.rules?.map(r => `• ${r}`).join("<br>") || "No rules generated."}
+        </div>
+    `;
+};
+
+const analyticsOutput = document.getElementById("analyticsOutput");
+
+document.getElementById("analyticsFunnelsBtn").onclick = () => {
+    analyticsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Generating funnel analysis...</div>
+        <div style="margin-top:8px;">
+            • Mapping awareness → conversion<br>
+            • Calculating drop-off points<br>
+            • Funnel report ready
+        </div>
+    `;
+};
+
+document.getElementById("analyticsMetricsBtn").onclick = () => {
+    analyticsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Loading performance metrics...</div>
+        <div style="margin-top:8px;">
+            • Engagement metrics<br>
+            • Conversion metrics<br>
+            • Retention metrics
+        </div>
+    `;
+};
+
+document.getElementById("analyticsReportsBtn").onclick = () => {
+    analyticsOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Building analytics report...</div>
+        <div style="margin-top:8px;">
+            • Compiling data<br>
+            • Formatting insights<br>
+            • Report ready for export
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   ANALYTICS ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("analyticsAiBtn").onclick = async () => {
+    analyticsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running AI Analytics...</div>
+        <div style="margin-top:8px;">
+            • Analyzing funnel<br>
+            • Checking performance<br>
+            • Generating insights
+        </div>
+    `;
+
+    const payload = {
+        funnel: document.getElementById("funnelType")?.value || ""
+    };
+
+    const result = await callForgeAI("analytics", payload);
+
+    if (result.error) {
+        analyticsOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    analyticsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Analytics Report</div>
+        <div style="margin-top:8px;">
+            ${result.insights?.map(i => `• ${i}`).join("<br>") || "No insights generated."}
+        </div>
+    `;
+};
+
+const leadScannerOutput = document.getElementById("leadScannerOutput");
+
+document.getElementById("leadScanBtn").onclick = () => {
+    leadScannerOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running deep scan...</div>
+        <div style="margin-top:8px;">
+            • Pulling metadata<br>
+            • Checking engagement<br>
+            • Extracting behavioral signals
+        </div>
+    `;
+};
+
+document.getElementById("leadEnrichBtn").onclick = () => {
+    leadScannerOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Enriching lead...</div>
+        <div style="margin-top:8px;">
+            • Adding demographic data<br>
+            • Mapping social graph<br>
+            • Enrichment complete
+        </div>
+    `;
+};
+
+document.getElementById("leadSignalsBtn").onclick = () => {
+    leadScannerOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Signal Extraction</div>
+        <div style="margin-top:8px;">
+            • Intent signals<br>
+            • Fit signals<br>
+            • Opportunity signals
+        </div>
+    `;
+};
+/* -----------------------------------------------------------
+   LEAD SCANNER ENGINE — AI INTEGRATION
+----------------------------------------------------------- */
+
+document.getElementById("leadScannerAiBtn").onclick = async () => {
+    leadScannerOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running AI Lead Scan...</div>
+        <div style="margin-top:8px;">
+            • Enriching profile<br>
+            • Extracting signals<br>
+            • Mapping opportunities
+        </div>
+    `;
+
+    const payload = {
+        lead: {
+            name: document.getElementById("leadName")?.value || "",
+            source: document.getElementById("leadSource")?.value || "",
+            notes: document.getElementById("leadNotes")?.value || ""
+        }
+    };
+
+    const result = await callForgeAI("lead_scanner", payload);
+
+    if (result.error) {
+        leadScannerOutput.innerHTML = `<div style="color:#ff7a18;">${result.message}</div>`;
+        return;
+    }
+
+    leadScannerOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">AI Lead Enrichment</div>
+        <div style="margin-top:8px;">
+            <strong>Signals:</strong><br>
+            ${result.signals?.map(s => `• ${s}`).join("<br>") || "No signals."}<br><br>
+
+            <strong>Opportunities:</strong><br>
+            ${result.opportunities?.map(o => `• ${o}`).join("<br>") || "No opportunities."}
+        </div>
+    `;
+};
+
+// Channels Engine
+document.getElementById("channelsAiBtn").onclick = async () => {
+    channelsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Running AI Channel Routing...</div>
+        <div style="margin-top:8px;">
+            • Analyzing platforms<br>
+            • Mapping distribution<br>
+            • Generating routing strategy
+        </div>
+    `;
+
+    const payload = {
+        channel: {
+            platform: document.getElementById("channelPlatform")?.value || "",
+            contentType: document.getElementById("channelContentType")?.value || "",
+            notes: document.getElementById("channelNotes")?.value || ""
+        }
+    };
+
+    const result = await callForgeAI("channels_ai", payload);
+
+    if (result.error) {
+        channelsOutput.innerHTML = `
+            <div style="color:#ff7a18;font-weight:600;">AI Error</div>
+            <div style="margin-top:8px;">
+                ${result.message}
+            </div>
+        `;
+        return;
+    }
+
+    channelsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">AI Channel Routing Results</div>
+        <div style="margin-top:8px;">
+            <strong>Strategy:</strong> ${result.strategy || "No strategy provided."}<br><br>
+
+            <strong>Recommended Platforms:</strong><br>
+            ${(result.platforms || []).map(p => `• ${p}`).join("<br>") || "None"}<br><br>
+
+            <strong>Distribution Notes:</strong><br>
+            ${result.notes || "No notes provided."}
+        </div>
+    `;
+};
+document.getElementById("channelsMapBtn").onclick = () => {
+    channelsOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Building channel map...</div>
+        <div style="margin-top:8px;">
+            • Mapping platforms<br>
+            • Assigning content types<br>
+            • Channel map ready
+        </div>
+    `;
+};
+
+
+document.getElementById("channelsRoutingBtn").onclick = () => {
+    channelsOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Routing content...</div>
+        <div style="margin-top:8px;">
+            • Applying routing rules<br>
+            • Checking platform fit<br>
+            • Routing complete
+        </div>
+    `;
+};
+
+document.getElementById("channelsDistributionBtn").onclick = () => {
+    channelsOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Distribution Engine</div>
+        <div style="margin-top:8px;">
+            • Preparing distribution package<br>
+            • Assigning delivery channels<br>
+            • Distribution ready
+        </div>
+    `;
+};
+// Instagram Channel Engine
+const instagramOutput = document.getElementById("instagramOutput");
+
+document.getElementById("igContentBtn").onclick = () => {
+    instagramOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Instagram Content Tools</div>
+        <div style="margin-top:8px;">
+            • Caption builder<br>
+            • Hashtag generator<br>
+            • Carousel creator<br>
+            • Reel script builder
+        </div>
+    `;
+};
+
+document.getElementById("igScheduleBtn").onclick = () => {
+    instagramOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Scheduling Tools</div>
+        <div style="margin-top:8px;">
+            • Best posting times<br>
+            • Auto-schedule queue<br>
+            • Content calendar<br>
+            • Reminder system
+        </div>
+    `;
+};
+
+document.getElementById("igAnalyticsBtn").onclick = () => {
+    instagramOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Instagram Analytics</div>
+        <div style="margin-top:8px;">
+            • Engagement metrics<br>
+            • Reach & impressions<br>
+            • Follower growth<br>
+            • Content performance
+        </div>
+    `;
+};
+// TikTok Channel Engine
+const tiktokOutput = document.getElementById("tiktokOutput");
+
+document.getElementById("ttContentBtn").onclick = () => {
+    tiktokOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">TikTok Reel Tools</div>
+        <div style="margin-top:8px;">
+            • Reel builder<br>
+            • Clip organizer<br>
+            • Audio sync tools<br>
+            • Hook generator
+        </div>
+    `;
+};
+
+document.getElementById("ttScriptBtn").onclick = () => {
+    tiktokOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Script Builder</div>
+        <div style="margin-top:8px;">
+            • Viral script templates<br>
+            • Hook → Body → CTA flow<br>
+            • Auto pacing suggestions<br>
+            • Trend-based prompts
+        </div>
+    `;
+};
+
+document.getElementById("ttScheduleBtn").onclick = () => {
+    tiktokOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Scheduling Tools</div>
+        <div style="margin-top:8px;">
+            • Best posting times<br>
+            • Auto-schedule queue<br>
+            • Content calendar<br>
+            • Reminder system
+        </div>
+    `;
+};
+
+document.getElementById("ttAnalyticsBtn").onclick = () => {
+    tiktokOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">TikTok Analytics</div>
+        <div style="margin-top:8px;">
+            • Engagement metrics<br>
+            • Watch-through rate<br>
+            • Follower growth<br>
+            • Trend performance
+        </div>
+    `;
+};
+// Etsy Channel Engine
+const etsyOutput = document.getElementById("etsyOutput");
+
+document.getElementById("etsyListingBtn").onclick = () => {
+    etsyOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Etsy Listing Tools</div>
+        <div style="margin-top:8px;">
+            • Title builder<br>
+            • Description formatter<br>
+            • Photo checklist<br>
+            • Pricing assistant
+        </div>
+    `;
+};
+
+document.getElementById("etsySeoBtn").onclick = () => {
+    etsyOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">SEO Optimizer</div>
+        <div style="margin-top:8px;">
+            • Keyword suggestions<br>
+            • Tag optimizer<br>
+            • Category recommendations<br>
+            • Ranking insights
+        </div>
+    `;
+};
+
+document.getElementById("etsyOrdersBtn").onclick = () => {
+    etsyOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Order Manager</div>
+        <div style="margin-top:8px;">
+            • Open orders<br>
+            • Fulfillment checklist<br>
+            • Shipping labels<br>
+            • Customer messages
+        </div>
+    `;
+};
+
+document.getElementById("etsyAnalyticsBtn").onclick = () => {
+    etsyOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Etsy Analytics</div>
+        <div style="margin-top:8px;">
+            • Views & visits<br>
+            • Conversion rate<br>
+            • Revenue tracking<br>
+            • Listing performance
+        </div>
+    `;
+};
+// Shopify Channel Engine
+const shopifyOutput = document.getElementById("shopifyOutput");
+
+document.getElementById("shopifyProductsBtn").onclick = () => {
+    shopifyOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">Product Tools</div>
+        <div style="margin-top:8px;">
+            • Product builder<br>
+            • Description formatter<br>
+            • Image checklist<br>
+            • Pricing assistant
+        </div>
+    `;
+};
+
+document.getElementById("shopifyInventoryBtn").onclick = () => {
+    shopifyOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Inventory Manager</div>
+        <div style="margin-top:8px;">
+            • Stock levels<br>
+            • Low inventory alerts<br>
+            • SKU tracking<br>
+            • Restock planner
+        </div>
+    `;
+};
+
+document.getElementById("shopifyOrdersBtn").onclick = () => {
+    shopifyOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Order Manager</div>
+        <div style="margin-top:8px;">
+            • Open orders<br>
+            • Fulfillment workflow<br>
+            • Shipping labels<br>
+            • Customer messages
+        </div>
+    `;
+};
+
+document.getElementById("shopifyAnalyticsBtn").onclick = () => {
+    shopifyOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Shopify Analytics</div>
+        <div style="margin-top:8px;">
+            • Sales performance<br>
+            • Conversion rate<br>
+            • Revenue tracking<br>
+            • Product insights
+        </div>
+    `;
+};
+// YouTube Channel Engine
+const youtubeOutput = document.getElementById("youtubeOutput");
+
+document.getElementById("ytContentBtn").onclick = () => {
+    youtubeOutput.innerHTML = `
+        <div style="color:#ffb347;font-weight:600;">YouTube Video Tools</div>
+        <div style="margin-top:8px;">
+            • Video builder<br>
+            • Thumbnail checklist<br>
+            • Clip organizer<br>
+            • Title & description assistant
+        </div>
+    `;
+};
+
+document.getElementById("ytScriptBtn").onclick = () => {
+    youtubeOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">Script Builder</div>
+        <div style="margin-top:8px;">
+            • Long-form script templates<br>
+            • Hook → Body → CTA flow<br>
+            • Auto pacing suggestions<br>
+            • Topic-based prompts
+        </div>
+    `;
+};
+
+document.getElementById("ytScheduleBtn").onclick = () => {
+    youtubeOutput.innerHTML = `
+        <div style="color:#ffa34d;font-weight:600;">Scheduling Tools</div>
+        <div style="margin-top:8px;">
+            • Best posting times<br>
+            • Auto-schedule queue<br>
+            • Content calendar<br>
+            • Reminder system
+        </div>
+    `;
+};
+
+document.getElementById("ytAnalyticsBtn").onclick = () => {
+    youtubeOutput.innerHTML = `
+        <div style="color:#ff7a18;font-weight:600;">YouTube Analytics</div>
+        <div style="margin-top:8px;">
+            • Watch time<br>
+            • Audience retention<br>
+            • Traffic sources<br>
+            • Video performance
+        </div>
+    `;
+};
+</script>
+
+</body>
+</html>

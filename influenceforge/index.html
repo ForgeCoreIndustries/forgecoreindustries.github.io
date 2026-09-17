@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>InfluenceForge AI — ForgeCore Industries</title>
+
+<style>
+:root{
+  --forge-black:#0A0A0A;
+  --forge-amber:#FFB000;
+  --forge-orange:#FF6A00;
+  --forge-text:#E6E6E6;
+}
+
+/* GLOBAL */
+body{
+  background:var(--forge-black);
+  color:var(--forge-text);
+  font-family:'Segoe UI',Arial,sans-serif;
+  overflow-x:hidden;
+  margin:0;
+  padding:0;
+}
+
+/* BANNER */
+img[alt="InfluenceForge Banner"] {
+  width: 100%;
+  height: 320px;          /* adjust this number */
+  object-fit: cover;
+  object-position: 50% 25%;
+  display: block;
+}
+.cf-header-logo img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* PARTICLES */
+.particles{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:-1;
+}
+.particles span{
+  position:absolute;width:6px;height:6px;
+  background:rgba(255,176,0,.9);
+  border-radius:50%;filter:blur(2px);
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-160px) scale(1.8);}
+  100%{transform:translateY(0) scale(1);}
+}
+
+/* MAIN WRAPPER */
+.wrapper{
+  max-width:1200px;
+  margin:40px auto;
+  padding:20px;
+  display:flex;
+  gap:20px;
+  position:relative;
+}
+.wrapper::before{
+  content:"InfluenceForge AI — ForgeCore Suite";
+  position:absolute;
+  top:-26px;left:0;
+  padding:4px 10px;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(255,176,0,.8);
+}
+
+/* LEFT PANEL */
+.leftPanel{
+  width:260px;
+  background:var(--forge-black);
+  border:1px solid var(--forge-orange);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 0 18px rgba(255,106,0,.35);
+}
+.leftPanel h2{
+  color:var(--forge-amber);
+  margin-bottom:16px;
+}
+.leftPanel button{
+  width:100%;
+  margin-bottom:12px;
+  padding:12px;
+  background:linear-gradient(135deg,var(--forge-amber),var(--forge-orange));
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* RIGHT PANEL */
+.rightPanel{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+/* PANEL */
+.panel{
+  background:var(--forge-black);
+  border:1px solid var(--forge-orange);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 0 18px rgba(255,106,0,.35);
+}
+.panelTitle{
+  color:var(--forge-amber);
+  margin-bottom:16px;
+}
+.inputRow{
+  margin-bottom:14px;
+}
+.inputRow label{
+  color:var(--forge-amber);
+  font-size:13px;
+}
+.inputRow input,
+.inputRow select{
+  width:100%;
+  margin-top:6px;
+  padding:10px;
+  background:var(--forge-black);
+  border:1px solid var(--forge-orange);
+  border-radius:10px;
+  color:var(--forge-amber);
+}
+.forgeButton{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,var(--forge-amber),var(--forge-orange));
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:10px;
+}
+.outputBox{
+  margin-top:14px;
+  background:var(--forge-black);
+  border:1px solid rgba(255,176,0,.3);
+  border-radius:10px;
+  padding:14px;
+  min-height:70px;
+  color:var(--forge-amber);
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  margin-top:40px;
+  padding:20px;
+  border-top:1px solid rgba(255,176,0,.2);
+  color:var(--forge-amber);
+  font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BANNER -->
+<img src="InfluenceForge_header.png" alt="InfluenceForge Banner">
+
+<!-- PARTICLES -->
+<div class="particles"></div>
+
+<!-- MAIN -->
+<div class="wrapper">
+
+  <!-- LEFT PANEL -->
+  <div class="leftPanel">
+    <h2>InfluenceForge Tools</h2>
+    <button onclick="showPanel('createInfluencer')"><span class="icon">🧬</span>Create Influencer</button>
+    <button onclick="showPanel('generateScript')"><span class="icon">📜</span>Generate Script</button>
+    <button onclick="showPanel('generateVideo')"><span class="icon">🎬</span>Generate Video</button>
+    <button onclick="showPanel('contentCalendar')"><span class="icon">📅</span>Content Calendar</button>
+    <button onclick="showPanel('breedInfluencer')"><span class="icon">🧪</span>Breed Influencer</button>
+    <button onclick="showPanel('predictTrends')"><span class="icon">📈</span>Predict Trends</button>
+    <button onclick="showPanel('purchasePanel')"><span class="icon">💳</span>Purchase App</button>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="rightPanel">
+
+    <!-- CREATE INFLUENCER -->
+    <div id="createInfluencer" class="panel">
+      <h2 class="panelTitle">Create Influencer</h2>
+
+      <div class="inputRow">
+        <label>Name</label>
+        <input id="nameInput" type="text">
+      </div>
+
+      <div class="inputRow">
+        <label>Personality</label>
+        <select id="personalityInput">
+          <option>Energetic</option>
+          <option>Calm</option>
+          <option>Funny</option>
+          <option>Direct</option>
+        </select>
+      </div>
+
+      <div class="inputRow">
+        <label>Style</label>
+        <select id="styleInput">
+          <option>Bright</option>
+          <option>Dark</option>
+          <option>Minimal</option>
+          <option>Bold</option>
+        </select>
+      </div>
+
+      <div id="avatarBox" class="outputBox"></div>
+      <div id="voiceBox" class="outputBox"></div>
+    </div>
+
+    <!-- GENERATE SCRIPT -->
+    <div id="generateScript" class="panel" style="display:none;">
+      <h2 class="panelTitle">Generate Script</h2>
+
+      <div class="inputRow">
+        <label for="scriptTopic">Topic</label>
+        <input type="text" id="scriptTopic" placeholder="Video Topic">
+      </div>
+
+      <div class="inputRow">
+        <label for="scriptLength">Length</label>
+        <select id="scriptLength">
+          <option value="short">Short (30–60 sec)</option>
+          <option value="medium">Medium (1–2 min)</option>
+          <option value="long">Long (3–5 min)</option>
+        </select>
+      </div>
+
+      <button class="forgeButton" onclick="generateScript()">Generate Script</button>
+      <div id="scriptOutput" class="outputBox"></div>
+    </div>
+
+    <!-- GENERATE VIDEO -->
+    <div id="generateVideo" class="panel" style="display:none;">
+      <h2 class="panelTitle">Generate Video</h2>
+
+      <div class="inputRow">
+        <label for="videoConcept">Concept</label>
+        <input type="text" id="videoConcept" placeholder="Video Concept">
+      </div>
+
+      <div class="inputRow">
+        <label for="videoStyle">Style</label>
+        <select id="videoStyle">
+          <option value="cinematic">Cinematic</option>
+          <option value="bright">Bright</option>
+          <option value="dark">Dark</option>
+          <option value="minimal">Minimal</option>
+          <option value="flashy">Flashy</option>
+        </select>
+      </div>
+
+      <button class="forgeButton" onclick="generateVideo()">Generate Video Plan</button>
+      <div id="videoOutput" class="outputBox"></div>
+    </div>
+
+    <!-- CONTENT CALENDAR -->
+    <div id="contentCalendar" class="panel" style="display:none;">
+      <h2 class="panelTitle">Content Calendar</h2>
+
+      <div class="inputRow">
+        <label for="calendarName">Influencer Name</label>
+        <input type="text" id="calendarName" placeholder="Influencer Name">
+      </div>
+
+      <button class="forgeButton" onclick="generateCalendar()">Generate Calendar</button>
+      <div id="calendarOutput" class="outputBox"></div>
+    </div>
+
+    <!-- BREED INFLUENCER -->
+    <div id="breedInfluencer" class="panel" style="display:none;">
+      <h2 class="panelTitle">Breed Influencer</h2>
+
+      <div class="inputRow">
+        <label for="breedA">Influencer A Traits</label>
+        <input type="text" id="breedA" placeholder="Energetic, Bright, Funny">
+      </div>
+
+      <div class="inputRow">
+        <label for="breedB">Influencer B Traits</label>
+        <input type="text" id="breedB" placeholder="Calm, Dark, Elegant">
+      </div>
+
+      <button class="forgeButton" onclick="breedInfluencer()">Breed Influencers</button>
+      <div id="breedOutput" class="outputBox"></div>
+    </div>
+
+    <!-- PREDICT TRENDS -->
+    <div id="predictTrends" class="panel" style="display:none;">
+      <h2 class="panelTitle">Predict Trends</h2>
+
+      <div class="inputRow">
+        <label for="trendTopic">Topic</label>
+        <input type="text" id="trendTopic" placeholder="Fashion, Tech, Fitness, etc.">
+      </div>
+
+      <div class="inputRow">
+        <label for="trendRange">Time Range</label>
+        <select id="trendRange">
+          <option value="30">Next 30 Days</option>
+          <option value="60">Next 60 Days</option>
+          <option value="90">Next 90 Days</option>
+          <option value="180">Next 6 Months</option>
+          <option value="365">Next Year</option>
+        </select>
+      </div>
+
+      <button class="forgeButton" onclick="predictTrends()">Predict Trends</button>
+      <div id="trendOutput" class="outputBox"></div>
+    </div>
+
+    <!-- PURCHASE PANEL -->
+    <div id="purchasePanel" class="panel" style="display:none;">
+      <h2 class="panelTitle">Purchase InfluenceForge AI</h2>
+
+      <p style="color:var(--forge-amber); font-size:14px;">
+        Unlock the full InfluenceForge AI Suite — Create Influencers, Generate Scripts,
+        Build Calendars, Predict Trends, and more.
+      </p>
+
+      <div style="margin-top:20px; text-align:center;">
+        <a href="YOUR_PAYHIP_PRODUCT_LINK"
+           class="forgeButton"
+           style="display:inline-block; text-decoration:none; color:#000;">
+           Buy Now — $29
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PURCHASE BUTTON INLINE (optional, near footer) -->
+<div style="text-align:center; margin-top:40px;">
+  <a href="YOUR_PAYHIP_PRODUCT_LINK"
+     style="
+       padding:14px 28px;
+       background:linear-gradient(135deg,var(--forge-amber),var(--forge-orange));
+       color:#000;
+       font-weight:700;
+       border-radius:999px;
+       text-decoration:none;
+       display:inline-block;
+       box-shadow:0 0 18px rgba(255,106,0,.35);
+     ">
+     Purchase InfluenceForge AI — $29
+  </a>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  ForgeCore Industries — InfluenceForge AI™ — 2026 ©
+</div>
+
+<script>
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+  const el=document.getElementById(id);
+  if(el) el.style.display='block';
+}
+
+function generateScript(){
+  const topic=document.getElementById("scriptTopic").value.trim();
+  const length=document.getElementById("scriptLength").value;
+  if(!topic){
+    document.getElementById("scriptOutput").innerHTML="Please enter a topic.";
+    return;
+  }
+  let durationText=
+    length==="short"?"30–60 seconds":
+    length==="medium"?"1–2 minutes":
+    "3–5 minutes";
+  const script=`<strong>Script Topic:</strong> ${topic}<br><br>
+  <strong>Length:</strong> ${durationText}<br><br>
+  <strong>Generated Script:</strong><br>
+  Hey everyone, today we're diving into ${topic}! Let’s break it down simply and engagingly.`;
+  document.getElementById("scriptOutput").innerHTML=script;
+}
+
+function generateVideo(){
+  const concept=document.getElementById("videoConcept").value.trim();
+  const style=document.getElementById("videoStyle").value;
+  if(!concept){
+    document.getElementById("videoOutput").innerHTML="Please enter a video concept.";
+    return;
+  }
+  const videoPlan=`<strong>Concept:</strong> ${concept}<br><br>
+  <strong>Style:</strong> ${style}<br><br>
+  <strong>Video Plan:</strong><br>
+  A ${style}-style video built around "${concept}". Includes intro hook, main segment, visual cues, and a strong call-to-action.`;
+  document.getElementById("videoOutput").innerHTML=videoPlan;
+}
+
+function generateCalendar(){
+  const name=document.getElementById("calendarName").value.trim();
+  if(!name){
+    document.getElementById("calendarOutput").innerHTML="Please enter an influencer name.";
+    return;
+  }
+  const calendar=`<strong>Content Calendar for ${name}</strong><br><br>
+  <ul>
+    <li>Monday — Motivational Post</li>
+    <li>Wednesday — Educational Video</li>
+    <li>Friday — Engagement Question</li>
+    <li>Sunday — Recap or Behind-the-Scenes</li>
+  </ul>`;
+  document.getElementById("calendarOutput").innerHTML=calendar;
+}
+
+function breedInfluencer(){
+  const traitsA=document.getElementById("breedA").value.trim();
+  const traitsB=document.getElementById("breedB").value.trim();
+  if(!traitsA||!traitsB){
+    document.getElementById("breedOutput").innerHTML="Please enter traits for both influencers.";
+    return;
+  }
+  const hybrid=`<strong>Influencer A Traits:</strong> ${traitsA}<br>
+  <strong>Influencer B Traits:</strong> ${traitsB}<br><br>
+  <strong>Hybrid Influencer:</strong><br>
+  A fusion of ${traitsA.toLowerCase()} and ${traitsB.toLowerCase()}, creating a unique personality blend optimized for audience engagement.`;
+  document.getElementById("breedOutput").innerHTML=hybrid;
+}
+
+function predictTrends(){
+  const topic=document.getElementById("trendTopic").value.trim();
+  const range=document.getElementById("trendRange").value;
+  if(!topic){
+    document.getElementById("trendOutput").innerHTML="Please enter a trend topic.";
+    return;
+  }
+  const trend=`<strong>Trend Topic:</strong> ${topic}<br>
+  <strong>Time Range:</strong> Next ${range} days<br><br>
+  <strong>Prediction:</strong><br>
+  Expect rising interest in ${topic.toLowerCase()} driven by social momentum, algorithmic boosts, and seasonal engagement patterns.`;
+  document.getElementById("trendOutput").innerHTML=trend;
+}
+
+// particles
+document.addEventListener("DOMContentLoaded",()=>{
+  const p=document.querySelector('.particles');
+  if(!p) return;
+  for(let i=0;i<60;i++){
+    const s=document.createElement('span');
+    s.style.left=Math.random()*100+'%';
+    s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*4)+'s';
+    p.appendChild(s);
+  }
+});
+</script>
+
+</body>
+</html>

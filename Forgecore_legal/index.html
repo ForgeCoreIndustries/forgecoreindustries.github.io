@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal — ForgeCore Industries</title>
+
+<style>
+:root {
+  --forge-black:#0A0A0A;
+  --forge-amber:#FFBF00;
+  --forge-orange-stroke:#FF8C32;
+  --text-main:#E6E6E6;
+  --text-heading:#FFFFFF;
+}
+
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:var(--forge-black);
+  color:var(--text-main);
+  line-height:1.6;
+}
+
+/* UNIVERSAL HEADER */
+.forgecore-topbar {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  padding:14px 0;
+  background:#0A0A0A;
+  border-bottom:1px solid var(--forge-orange-stroke);
+}
+.forge-btn {
+  padding:8px 16px;
+  background:#1A1A1A;
+  border:1px solid var(--forge-orange-stroke);
+  color:var(--forge-amber);
+  text-decoration:none;
+  border-radius:6px;
+  font-weight:600;
+  transition:0.25s ease;
+}
+.forge-btn:hover {
+  background:var(--forge-amber);
+  color:var(--forge-black);
+  transform:translateY(-2px);
+}
+
+/* HERO */
+.hero{
+  background:#0d0d0d;
+  padding:52px 20px 40px;
+  text-align:center;
+  border-bottom:1px solid rgba(245,158,11,.1);
+}
+.hbadge{
+  display:inline-block;
+  background:rgba(245,158,11,.12);
+  border:1px solid rgba(245,158,11,.3);
+  color:var(--forge-amber);
+  font-size:11px;
+  font-weight:700;
+  padding:5px 14px;
+  border-radius:999px;
+  margin-bottom:16px;
+  letter-spacing:.07em;
+}
+.hero h1{
+  font-size:clamp(28px,5vw,44px);
+  font-weight:800;
+  margin-bottom:10px;
+  color:#fff;
+}
+.hero p{
+  color:#9ca3af;
+  font-size:14px;
+  max-width:500px;
+  margin:0 auto;
+}
+
+/* TAB NAV */
+.tab-nav{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:28px 20px 0;
+  max-width:900px;
+  margin:0 auto;
+}
+.tab-btn{
+  background:rgba(245,158,11,.06);
+  border:1px solid rgba(245,158,11,.2);
+  color:#9ca3af;
+  padding:8px 18px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.tab-btn:hover,
+.tab-btn.active{
+  background:rgba(245,158,11,.12);
+  border-color:#f59e0b;
+  color:#f59e0b;
+}
+
+/* LEGAL CONTENT */
+.legal-wrap{
+  max-width:860px;
+  margin:0 auto;
+  padding:36px 20px 60px;
+}
+.legal-section{display:none;}
+.legal-section.active{display:block;}
+
+.doc-header{
+  border-bottom:1px solid rgba(245,158,11,.15);
+  padding-bottom:20px;
+  margin-bottom:32px;
+}
+.doc-header h2{
+  font-size:26px;
+  font-weight:800;
+  margin-bottom:6px;
+  color:#fff;
+}
+.doc-header .date{
+  font-size:12px;
+  color:#6b7280;
+}
+.doc-header .effective{
+  font-size:13px;
+  color:#f59e0b;
+  margin-top:4px;
+  font-weight:600;
+}
+
+.section-title{
+  font-size:15px;
+  font-weight:700;
+  color:#f59e0b;
+  margin:28px 0 10px;
+  padding-left:12px;
+  border-left:3px solid #f59e0b;
+}
+.legal-p{
+  font-size:14px;
+  color:#9ca3af;
+  line-height:1.85;
+  margin-bottom:14px;
+}
+.legal-ul{
+  margin:8px 0 14px 20px;
+}
+.legal-ul li{
+  font-size:14px;
+  color:#9ca3af;
+  margin-bottom:6px;
+  line-height:1.7;
+}
+
+/* CONTACT GRID */
+.contact-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  margin-bottom:32px;
+}
+.highlight-box{
+  background:#111;
+  border:1px solid rgba(245,158,11,.2);
+  padding:20px;
+  border-radius:10px;
+}
+.contact-card{
+  background:#111;
+  border:1px solid rgba(245,158,11,.2);
+  padding:20px;
+  border-radius:10px;
+  margin-top:20px;
+}
+.contact-btn{
+  display:inline-block;
+  margin-top:8px;
+  padding:8px 16px;
+  border-radius:8px;
+  background:#FFBF00;
+  color:#0A0A0A;
+  text-decoration:none;
+  font-weight:600;
+}
+.contact-btn:hover{
+  background:#FF8C32;
+}
+
+/* FOOTER */
+footer{
+  background:#0d0d0d;
+  border-top:1px solid rgba(245,158,11,.1);
+  padding:28px 20px;
+  text-align:center;
+}
+.fl{
+  font-size:15px;
+  font-weight:800;
+  color:#f59e0b;
+  margin-bottom:8px;
+}
+.fn{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.fn a{
+  font-size:12px;
+  color:#6b7280;
+  text-decoration:none;
+}
+.fn a:hover{
+  color:#f59e0b;
+}
+.fc{
+  font-size:11px;
+  color:#374151;
+}
+.highlight-box a {
+  display:inline-block;
+  font-size:13px;
+  color:#f59e0b;
+  font-weight:700;
+  word-break:break-word;      /* forces long text to wrap */
+  overflow-wrap:anywhere;     /* prevents overflow */
+}
+</style>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.legal-section').forEach(sec=>sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+
+</head>
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<div class="forgecore-topbar">
+  <a class="forge-btn" href="https://forgecoreindustries.com/creatorforge/">CreatorForge AI</a>
+  <a class="forge-btn" href="https://forgecoreindustries.com/embroideryforge/">EmbroideryForge AI</a>
+  <a class="forge-btn" href="https://forgecoreindustries.com/viralforge/">ViralForge AI</a>
+  <a class="forge-btn" href="https://forgecoreindustries.com/onetaplogo/">OneTap Logo Builder</a>
+  <a class="forge-btn" href="https://forgecoreindustries.com/Command_Platform/">All Apps</a>
+  <a class="forge-btn" href="https://forgecoreindustries.com/Forgecore_legal/">Legal</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbadge">🔒 FORGECORE INDUSTRIES — LEGAL & POLICIES</div>
+  <h1>Legal & Policies</h1>
+  <p>Everything you need to know about your rights, our policies, and how ForgeCore Industries operates.</p>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('tab-terms')">📃 Terms of Use</button>
+  <button class="tab-btn" onclick="showTab('tab-privacy')">🔒 Privacy Policy</button>
+  <button class="tab-btn" onclick="showTab('tab-refund')">💰 Refund Policy</button>
+  <button class="tab-btn" onclick="showTab('tab-disclaimer')">⚠️ Disclaimer</button>
+  <button class="tab-btn" onclick="showTab('tab-contact')">📧 Contact</button>
+</div>
+
+<!-- LEGAL CONTENT -->
+<div class="legal-wrap">
+
+  <!-- TERMS OF USE -->
+  <div id="tab-terms" class="legal-section active">
+    <div class="doc-header">
+      <h2>Terms of Use</h2>
+      <div class="date">Updated: August 23, 2026</div>
+      <div class="effective">Effective Immediately</div>
+    </div>
+
+    <p class="legal-p">
+      These Terms of Use (“Terms”) govern your access to and use of ForgeCore Industries’ websites,
+      applications, AI-powered tools, and related services (collectively, the “Services”). By accessing
+      or using the Services, you agree to be bound by these Terms.
+    </p>
+
+    <h3 class="section-title">1. Company & Ownership</h3>
+    <p class="legal-p">
+      The Services are operated by ForgeCore Industries LLC (“ForgeCore”, “we”, “us”, “our”), a
+      single‑member limited liability company based in Georgia, United States. All software, tools,
+      branding, content, and intellectual property associated with the Services are owned by ForgeCore
+      Industries LLC.
+    </p>
+
+    <h3 class="section-title">2. Eligibility & Account</h3>
+    <p class="legal-p">
+      You must be at least 18 years old, or the age of majority in your jurisdiction, to use the
+      Services. You are responsible for maintaining the confidentiality of your account credentials and
+      for all activity that occurs under your account.
+    </p>
+
+    <h3 class="section-title">3. License & Permitted Use</h3>
+    <p class="legal-p">
+      ForgeCore grants you a limited, non‑exclusive, non‑transferable license to access and use the
+      Services for your personal or business use, subject to these Terms and any applicable plan or
+      subscription. You may not reverse engineer, resell, sublicense, or exploit the Services except as
+      expressly permitted in writing by ForgeCore.
+    </p>
+
+    <h3 class="section-title">4. Prohibited Conduct</h3>
+    <p class="legal-p">
+      You agree not to:
+    </p>
+    <ul class="legal-ul">
+      <li>Use the Services for unlawful, harmful, or abusive purposes.</li>
+      <li>Attempt to bypass security, rate limits, or technical restrictions.</li>
+      <li>Upload or generate content that is illegal, infringing, or violates third‑party rights.</li>
+      <li>Misrepresent AI‑generated output as professional legal, medical, or financial advice.</li>
+      <li>Use the Services to train competing models or scrape proprietary data.</li>
+    </ul>
+
+    <h3 class="section-title">5. AI & Third‑Party Services</h3>
+    <p class="legal-p">
+      Some features of the Services rely on third‑party providers (including AI APIs such as OpenAI).
+      By using these features, you acknowledge that your inputs may be processed by such providers to
+      generate outputs. ForgeCore is not responsible for outages, changes, or restrictions imposed by
+      third‑party platforms.
+    </p>
+
+    <h3 class="section-title">6. Intellectual Property</h3>
+    <p class="legal-p">
+      All software, designs, branding, documentation, and underlying technology of the Services are
+      owned by ForgeCore Industries LLC and protected by intellectual property laws. Subject to your
+      compliance with these Terms and any applicable license, you may use AI‑generated outputs for
+      personal or commercial purposes, but you do not acquire ownership of ForgeCore’s underlying
+      models, code, or systems.
+    </p>
+
+    <h3 class="section-title">7. Plans, Subscriptions & Changes</h3>
+    <p class="legal-p">
+      ForgeCore may offer one‑time purchases, subscriptions, and tiered plans. We may modify, suspend,
+      or discontinue any feature, plan, or pricing at any time, with or without notice, to the extent
+      permitted by law. Continued use of the Services after changes take effect constitutes acceptance
+      of the updated Terms.
+    </p>
+
+    <h3 class="section-title">8. Limitation of Liability</h3>
+    <p class="legal-p">
+      To the maximum extent permitted by law, ForgeCore Industries LLC and its owner shall not be
+      liable for indirect, incidental, consequential, or special damages arising out of or in connection
+      with your use of the Services, including reliance on AI‑generated content.
+    </p>
+
+    <h3 class="section-title">9. Governing Law</h3>
+    <p class="legal-p">
+      These Terms are governed by the laws of the State of Georgia, United States, without regard to
+      conflict of law principles. Any disputes shall be resolved in the state or federal courts located
+      in Georgia, where jurisdiction and venue are agreed.
+    </p>
+
+    <h3 class="section-title">10. Contact</h3>
+    <p class="legal-p">
+      For questions about these Terms, you may contact us using the details in the Contact tab.
+    </p>
+  </div>
+
+  <!-- PRIVACY POLICY -->
+  <div id="tab-privacy" class="legal-section">
+    <div class="doc-header">
+      <h2>Privacy Policy</h2>
+      <div class="date">Updated: August 23, 2026</div>
+      <div class="effective">Effective Immediately</div>
+    </div>
+
+    <p class="legal-p">
+      This Privacy Policy explains how ForgeCore Industries LLC (“ForgeCore”, “we”, “us”, “our”)
+      collects, uses, and protects information when you use our websites, applications, and Services.
+    </p>
+
+    <h3 class="section-title">1. Information We Collect</h3>
+    <p class="legal-p">
+      We may collect:
+    </p>
+    <ul class="legal-ul">
+      <li>Account information (name, email, login credentials).</li>
+      <li>Billing information (handled securely via third‑party payment processors).</li>
+      <li>Usage data (pages visited, features used, performance metrics).</li>
+      <li>Device and technical data (browser type, IP address, approximate location).</li>
+      <li>Content you submit to the Services (prompts, uploads, settings).</li>
+    </ul>
+
+    <h3 class="section-title">2. How We Use Your Information</h3>
+    <p class="legal-p">
+      We use information to:
+    </p>
+    <ul class="legal-ul">
+      <li>Provide, maintain, and improve the Services.</li>
+      <li>Authenticate users and secure accounts.</li>
+      <li>Respond to support requests and customer inquiries.</li>
+      <li>Monitor performance, prevent abuse, and ensure system integrity.</li>
+      <li>Develop new features and improve AI quality.</li>
+    </ul>
+
+    <h3 class="section-title">3. AI Inputs & Outputs</h3>
+    <p class="legal-p">
+      When you use AI features, your inputs (such as text prompts or uploaded content) may be processed
+      by ForgeCore systems and third‑party AI providers to generate outputs. We do not sell your
+      personal data. We use inputs and outputs only to operate, improve, and secure the Services.
+    </p>
+
+    <h3 class="section-title">4. Data Sharing</h3>
+    <p class="legal-p">
+      We may share data:
+    </p>
+    <ul class="legal-ul">
+      <li>With trusted service providers (hosting, payments, analytics, AI APIs) who assist in
+          operating the Services.</li>
+      <li>When required by law, regulation, or legal process.</li>
+      <li>To protect the rights, safety, and property of ForgeCore, our users, or the public.</li>
+    </ul>
+
+    <h3 class="section-title">5. Security</h3>
+    <p class="legal-p">
+      We use industry‑standard measures to protect information, including encryption, access controls,
+      and monitoring. However, no system is completely secure, and we cannot guarantee absolute
+      security.
+    </p>
+
+    <h3 class="section-title">6. Your Rights</h3>
+    <p class="legal-p">
+      Subject to applicable law, you may request:
+    </p>
+    <ul class="legal-ul">
+      <li>Access to the information we hold about you.</li>
+      <li>Correction of inaccurate information.</li>
+      <li>Deletion of your account and associated data, where legally permitted.</li>
+    </ul>
+
+    <h3 class="section-title">7. Data Retention</h3>
+    <p class="legal-p">
+      We retain information for as long as necessary to provide the Services, comply with legal
+      obligations, resolve disputes, and enforce our agreements.
+    </p>
+
+    <h3 class="section-title">8. Changes to This Policy</h3>
+    <p class="legal-p">
+      We may update this Privacy Policy from time to time. Material changes will be indicated by an
+      updated “Effective” date. Continued use of the Services after changes take effect constitutes
+      acceptance of the updated Policy.
+    </p>
+
+    <h3 class="section-title">9. Contact</h3>
+    <p class="legal-p">
+      For privacy‑related questions or requests, please contact us using the details in the Contact tab.
+    </p>
+  </div>
+<!-- REFUND POLICY -->
+<div id="tab-refund" class="legal-section">
+  <div class="doc-header">
+    <h2>Refund Policy</h2>
+    <div class="date">Updated: August 23, 2026</div>
+    <div class="effective">Effective Immediately</div>
+  </div>
+
+  <p class="legal-p">
+    ForgeCore Industries LLC provides digital software, AI-powered tools, and subscription-based
+    services. Because digital products are delivered instantly and cannot be “returned,” all sales
+    are considered final.
+  </p>
+
+  <h3 class="section-title">1. No Refunds</h3>
+  <p class="legal-p">
+    We do not offer refunds for digital purchases, subscriptions, upgrades, or downloadable content.
+    Once access is granted or a file is delivered, the transaction is complete.
+  </p>
+
+  <h3 class="section-title">2. Issue Resolution (24–48 Hours)</h3>
+  <p class="legal-p">
+    If you experience a technical issue, installation problem, billing concern, or unexpected
+    behavior within the software, contact ForgeCore Support within 24–48 hours. We will attempt to
+    diagnose and resolve the issue promptly.
+  </p>
+
+  <h3 class="section-title">3. What We Can Fix</h3>
+  <ul class="legal-ul">
+    <li>Installation or activation problems</li>
+    <li>Access or login issues</li>
+    <li>Subscription or billing errors</li>
+    <li>Unexpected software behavior</li>
+  </ul>
+
+  <p class="legal-p">
+    Support is available through the email listed in the Contact tab. We review each case and
+    attempt to resolve issues, but refunds are not provided for digital products under any
+    circumstances.
+  </p>
+</div>
+
+
+  <!-- DISCLAIMER -->
+  <div id="tab-disclaimer" class="legal-section">
+    <div class="doc-header">
+      <h2>Disclaimer</h2>
+      <div class="date">Updated: August 23, 2026</div>
+      <div class="effective">Effective Immediately</div>
+    </div>
+
+    <h3 class="section-title">1. No Warranties</h3>
+    <p class="legal-p">
+      The Services are provided “as‑is” and “as‑available” without warranties of any kind, whether
+      express or implied, including but not limited to warranties of merchantability, fitness for a
+      particular purpose, and non‑infringement.
+    </p>
+
+    <h3 class="section-title">2. AI Output Disclaimer</h3>
+    <p class="legal-p">
+      AI‑generated content may be inaccurate, incomplete, unexpected, or non‑unique. You are solely
+      responsible for reviewing, validating, and deciding how to use any AI‑generated output. ForgeCore
+      does not guarantee that AI outputs will meet your expectations or be suitable for any specific
+      purpose.
+    </p>
+
+    <h3 class="section-title">3. No Professional Advice</h3>
+    <p class="legal-p">
+      The Services do not provide legal, financial, medical, or other professional advice. Any content
+      generated or displayed by the Services should not be relied upon as a substitute for professional
+      consultation with a qualified expert.
+    </p>
+
+    <h3 class="section-title">4. Third‑Party Platforms</h3>
+    <p class="legal-p">
+      ForgeCore is not responsible for limitations, outages, policy changes, or restrictions imposed by
+      third‑party platforms (such as social networks, marketplaces, or AI providers). Your use of
+      third‑party services is subject to their own terms and policies.
+    </p>
+
+    <h3 class="section-title">5. Limitation of Responsibility</h3>
+    <p class="legal-p">
+      To the fullest extent permitted by law, ForgeCore Industries LLC and its owner shall not be
+      responsible for any losses arising from your reliance on AI‑generated content, your use of the
+      Services, or your interactions with third‑party platforms.
+    </p>
+  </div>
+
+  <!-- CONTACT -->
+  <div id="tab-contact" class="legal-section">
+    <div class="doc-header">
+      <h2>Contact ForgeCore Industries</h2>
+      <div class="date">We respond within 24–48 hours, Monday through Friday.</div>
+    </div>
+
+    <div class="contact-grid">
+      <div class="highlight-box">
+        <p style="font-size:28px;margin-bottom:8px;">📧</p>
+        <p><strong>General Support</strong></p>
+        <p><a href="mailto:support@forgecoreindustries.com" style="color:#f59e0b;font-weight:700;">support@forgecoreindustries.com</a></p>
+      </div>
+
+      <div class="highlight-box">
+        <p style="font-size:28px;margin-bottom:8px;">💰</p>
+        <p><strong>Billing &amp; Refunds</strong></p>
+        <p><a href="mailto:support@forgecoreindustries.com" style="color:#f59e0b;font-weight:700;">support@forgecoreindustries.com</a></p>
+      </div>
+
+      <div class="highlight-box">
+        <p style="font-size:28px;margin-bottom:8px;">📍</p>
+        <p><strong>Business Location</strong></p>
+        <p style="color:#d1d5db;">Toccoa, Georgia<br>United States</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">What to Include in Your Email</h3>
+    <ul class="legal-ul">
+      <li>Your Payhip order number or receipt email.</li>
+      <li>Which ForgeCore product or subscription you are using.</li>
+      <li>A clear description of your question or issue.</li>
+      <li>Screenshots or examples, if applicable.</li>
+    </ul>
+
+    <h3 class="section-title">Response Times</h3>
+    <ul class="legal-ul">
+      <li><strong style="color:#fff;">General inquiries:</strong> 24–48 hours.</li>
+      <li><strong style="color:#fff;">Technical support:</strong> 24–48 hours.</li>
+      <li><strong style="color:#fff;">Refund requests:</strong> 24–48 hours.</li>
+    </ul>
+
+    <div class="contact-card">
+      <h4>🔥 Ready to Reach Out?</h4>
+      <p>Whether it’s a question, an issue, or just feedback — we’d love to hear from you.</p>
+      <a href="mailto:support@forgecoreindustries.com" class="contact-btn">📧 Email Us Now</a>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+ <div class="fn">
+  <a href="https://forgecoreindustries.com/creatorforge/">CreatorForge AI</a>
+  <a href="https://forgecoreindustries.com/embroideryforge/">EmbroideryForge AI</a>
+  <a href="https://forgecoreindustries.com/viralforge/">ViralForge AI</a>
+  <a href="https://forgecoreindustries.com/onetaplogo/">OneTap Logo Builder</a>
+  <a href="https://forgecoreindustries.com/Command_Platform/">All Apps</a>
+  <a href="https://forgecoreindustries.com/Forgecore_legal/">Legal</a>
+</div>
+
+  <div class="fc">© 2026 ForgeCore Industries — All Rights Reserved</div>
+</footer>
+
+</body>
+</html>

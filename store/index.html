@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ForgeCore Industries — Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #050608;
+      --bg-alt: #0b0d10;
+      --molten: linear-gradient(135deg, #ffb000 0%, #ff6a00 40%, #1a1c22 100%);
+      --accent: #ffb000;
+      --accent-strong: #ff6a00;
+      --text-main: #e6e6e6;
+      --text-muted: #9ca3af;
+      --panel: rgba(17, 19, 24, 0.82);
+      --border: rgba(255, 176, 0, 0.25);
+      --radius: 12px;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.65);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1a1c22 0%, #050608 55%, #020305 100%);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Cinematic molten spine */
+    .molten-spine {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 420px;
+      height: 100vh;
+      background: var(--molten);
+      opacity: 0.18;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Header */
+    .header {
+      padding: 28px 24px;
+      border-bottom: 1px solid rgba(255, 176, 0, 0.18);
+      background: rgba(5, 6, 8, 0.65);
+      backdrop-filter: blur(14px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--molten);
+      box-shadow: 0 0 22px rgba(255, 176, 0, 0.4);
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 40px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 620px;
+      line-height: 1.5;
+    }
+
+    /* Product Grid */
+    .grid {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 22px;
+    }
+
+    /* Product Card */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 28px 70px rgba(255, 176, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .tier {
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text-main);
+      opacity: 0.9;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--molten);
+      color: #050608;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: filter 0.2s ease;
+    }
+
+    .btn:hover {
+      filter: brightness(1.08);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 60px;
+      padding: 30px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 176, 0, 0.18);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="molten-spine"></div>
+
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <div class="logo-text">ForgeCore Store</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="hero-title">ForgeCore OS Marketplace</h1>
+    <p class="hero-sub">
+      Choose your ForgeCore engines, AI modules, and creator tools. All products are delivered instantly with Stripe + Apple Pay.
+    </p>
+
+    <div class="grid">
+
+      <!-- InfluenceForge Basic -->
+      <div class="card">
+        <div class="card-title">InfluenceForge — Basic</div>
+        <div class="card-sub">Starter creator toolkit</div>
+        <div class="price">$29.99</div>
+        <div class="tier">✔ 50 scripts/month</div>
+        <div class="tier">✔ 20 hooks</div>
+        <div class="tier">✔ Basic caption generator</div>
+        <div class="tier">✔ Standard speed</div>
+        <div class="btn" data-product="influenceforge-basic">Buy Now</div>
+      </div>
+
+      <!-- InfluenceForge Pro -->
+      <div class="card">
+        <div class="card-title">InfluenceForge — Pro</div>
+        <div class="card-sub">Advanced creator engine</div>
+        <div class="price">$49.99</div>
+        <div class="tier">✔ 150 scripts/month</div>
+        <div class="tier">✔ 75 hooks</div>
+        <div class="tier">✔ Advanced caption generator</div>
+        <div class="tier">✔ Audience targeting</div>
+        <div class="tier">✔ Priority speed</div>
+        <div class="btn" data-product="influenceforge-pro">Buy Now</div>
+      </div>
+
+      <!-- InfluenceForge Ultra -->
+      <div class="card">
+        <div class="card-title">InfluenceForge — Ultra</div>
+        <div class="card-sub">Full creator powerhouse</div>
+        <div class="price">$79.99</div>
+        <div class="tier">✔ Unlimited scripts</div>
+        <div class="tier">✔ Unlimited hooks</div>
+        <div class="tier">✔ AI persona targeting</div>
+        <div class="tier">✔ Ultra speed</div>
+        <div class="tier">✔ Premium templates</div>
+        <div class="btn" data-product="influenceforge-ultra">Buy Now</div>
+      </div>
+           <!-- ForgeGrabber Starter -->
+      <div class="card">
+        <div class="card-title">ForgeGrabber — Starter</div>
+        <div class="card-sub">Entry-level credit pack</div>
+        <div class="price">$14.99</div>
+        <div class="tier">✔ 250 credits</div>
+        <div class="tier">✔ Basic scraping</div>
+        <div class="tier">✔ Standard speed</div>
+        <div class="tier">✔ No automation chains</div>
+        <div class="btn" data-product="forgegrabber-starter">Buy Now</div>
+      </div>
+
+      <!-- ForgeGrabber Pro -->
+      <div class="card">
+        <div class="card-title">ForgeGrabber — Pro</div>
+        <div class="card-sub">Advanced extraction engine</div>
+        <div class="price">$29.99</div>
+        <div class="tier">✔ 750 credits</div>
+        <div class="tier">✔ Advanced scraping</div>
+        <div class="tier">✔ Priority speed</div>
+        <div class="tier">✔ Automation chains</div>
+        <div class="tier">✔ Multi-source extraction</div>
+        <div class="btn" data-product="forgegrabber-pro">Buy Now</div>
+      </div>
+
+      <!-- ForgeGrabber Ultra -->
+      <div class="card">
+        <div class="card-title">ForgeGrabber — Ultra</div>
+        <div class="card-sub">Full extraction powerhouse</div>
+        <div class="price">$49.99</div>
+        <div class="tier">✔ 2000 credits</div>
+        <div class="tier">✔ Ultra speed</div>
+        <div class="tier">✔ AI-assisted extraction</div>
+        <div class="tier">✔ Auto-classification</div>
+        <div class="tier">✔ Bulk processing</div>
+        <div class="tier">✔ CreatorForge integration</div>
+        <div class="btn" data-product="forgegrabber-ultra">Buy Now</div>
+      </div>
+   <!-- OneTap Logo Pack -->
+<div class="card">
+  <div class="card-title">OneTap Logo Pack</div>
+  <div class="card-sub">AI‑generated brand identities</div>
+  <div class="price">$24.99</div>
+  <div class="tier">✔ 50 logo concepts</div>
+  <div class="tier">✔ Brand palettes</div>
+  <div class="tier">✔ Typography sets</div>
+  <div class="btn" data-product="onetap-logo-pack">Buy Now</div>
+</div>
+
+<!-- OneTap Branding Pack -->
+<div class="card">
+  <div class="card-title">OneTap Branding Pack</div>
+  <div class="card-sub">Full brand starter kit</div>
+  <div class="price">$34.99</div>
+  <div class="tier">✔ Logo + palette</div>
+  <div class="tier">✔ Social templates</div>
+  <div class="tier">✔ Export‑ready assets</div>
+  <div class="btn" data-product="onetap-branding-pack">Buy Now</div>
+</div>
+
+<!-- OneTap Social Pack -->
+<div class="card">
+  <div class="card-title">OneTap Social Pack</div>
+  <div class="card-sub">Instant social branding</div>
+  <div class="price">$19.99</div>
+  <div class="tier">✔ 30 social templates</div>
+  <div class="tier">✔ IG + TikTok formats</div>
+  <div class="tier">✔ Brand‑matched assets</div>
+  <div class="btn" data-product="onetap-social-pack">Buy Now</div>
+</div>
+
+      <!-- ViralForge -->
+      <div class="card">
+        <div class="card-title">ViralForge AI</div>
+        <div class="card-sub">Viral content engine</div>
+        <div class="price">$39.99</div>
+        <div class="tier">✔ TikTok & Reels scripts</div>
+        <div class="tier">✔ Hook & caption generator</div>
+        <div class="tier">✔ Trend-aware prompts</div>
+        <div class="btn" data-product="viralforge">Buy Now</div>
+      </div>
+<!-- ViralForge Template Pack -->
+<div class="card">
+  <div class="card-title">ViralForge Template Pack</div>
+  <div class="card-sub">High‑impact viral templates</div>
+  <div class="price">$29.99</div>
+  <div class="tier">✔ 40 viral templates</div>
+  <div class="tier">✔ TikTok + Reels optimized</div>
+  <div class="tier">✔ Hook‑driven layouts</div>
+  <div class="btn" data-product="viralforge-template-pack">Buy Now</div>
+</div>
+
+<!-- ViralForge Hook Pack -->
+<div class="card">
+  <div class="card-title">ViralForge Hook Pack</div>
+  <div class="card-sub">High‑conversion hooks</div>
+  <div class="price">$14.99</div>
+  <div class="tier">✔ 100 viral hooks</div>
+  <div class="tier">✔ Niche‑specific options</div>
+  <div class="tier">✔ Creator‑tested formats</div>
+  <div class="btn" data-product="viralforge-hook-pack">Buy Now</div>
+</div>
+
+<!-- ViralForge Caption Pack -->
+<div class="card">
+  <div class="card-title">ViralForge Caption Pack</div>
+  <div class="card-sub">Engagement‑boosting captions</div>
+  <div class="price">$12.99</div>
+  <div class="tier">✔ 150 captions</div>
+  <div class="tier">✔ Trend‑aware phrasing</div>
+  <div class="tier">✔ Creator‑optimized</div>
+  <div class="btn" data-product="viralforge-caption-pack">Buy Now</div>
+</div>
+
+      <!-- CreatorForge -->
+      <div class="card">
+        <div class="card-title">CreatorForge OS Edition</div>
+        <div class="card-sub">Full creator workspace</div>
+        <div class="price">$59.99</div>
+        <div class="tier">✔ Long-form + short-form scripts</div>
+        <div class="tier">✔ Multi-platform content flows</div>
+        <div class="tier">✔ OS-level creative tools</div>
+        <div class="btn" data-product="creatorforge">Buy Now</div>
+      </div>
+<!-- CreatorForge Script Pack -->
+<div class="card">
+  <div class="card-title">CreatorForge Script Pack</div>
+  <div class="card-sub">Long‑form + short‑form scripts</div>
+  <div class="price">$39.99</div>
+  <div class="tier">✔ 50 long‑form scripts</div>
+  <div class="tier">✔ 100 short‑form scripts</div>
+  <div class="tier">✔ Multi‑platform ready</div>
+  <div class="btn" data-product="creatorforge-script-pack">Buy Now</div>
+</div>
+
+<!-- CreatorForge Content Flow Pack -->
+<div class="card">
+  <div class="card-title">CreatorForge Content Flow Pack</div>
+  <div class="card-sub">Full content system</div>
+  <div class="price">$49.99</div>
+  <div class="tier">✔ 20 content flows</div>
+  <div class="tier">✔ Multi‑platform automation</div>
+  <div class="tier">✔ CreatorForge OS integration</div>
+  <div class="btn" data-product="creatorforge-flow-pack">Buy Now</div>
+</div>
+
+<!-- CreatorForge Premium Template Pack -->
+<div class="card">
+  <div class="card-title">CreatorForge Premium Template Pack</div>
+  <div class="card-sub">Elite creator templates</div>
+  <div class="price">$59.99</div>
+  <div class="tier">✔ 60 premium templates</div>
+  <div class="tier">✔ Cinematic layouts</div>
+  <div class="tier">✔ OS‑grade polish</div>
+  <div class="btn" data-product="creatorforge-premium-pack">Buy Now</div>
+</div>
+
+      <!-- OneTap Logo Builder -->
+      <div class="card">
+        <div class="card-title">OneTap Logo Builder</div>
+        <div class="card-sub">AI brand studio</div>
+        <div class="price">$24.99</div>
+        <div class="tier">✔ Logo concepts in seconds</div>
+        <div class="tier">✔ Brand palettes & typography</div>
+        <div class="tier">✔ Export-ready assets</div>
+        <div class="btn" data-product="onetap-logo">Buy Now</div>
+      </div>
+
+      <!-- EmbroideryForge -->
+      <div class="card">
+        <div class="card-title">EmbroideryForge AI</div>
+        <div class="card-sub">TikTok embroidery growth engine</div>
+        <div class="price">$34.99</div>
+        <div class="tier">✔ Scripted TikTok sequences</div>
+        <div class="tier">✔ Niche embroidery hooks</div>
+        <div class="tier">✔ Growth-focused content flows</div>
+        <div class="btn" data-product="embroideryforge">Buy Now</div>
+      </div>
+<!-- EmbroideryForge Kids Pack -->
+<div class="card">
+  <div class="card-title">EmbroideryForge Kids Pack</div>
+  <div class="card-sub">Kids apparel growth pack</div>
+  <div class="price">$19.99</div>
+  <div class="tier">✔ 30 kids scripts</div>
+  <div class="tier">✔ 20 hooks</div>
+  <div class="tier">✔ TikTok‑optimized</div>
+  <div class="btn" data-product="embroideryforge-kids-pack">Buy Now</div>
+</div>
+
+<!-- EmbroideryForge Hat Pack -->
+<div class="card">
+  <div class="card-title">EmbroideryForge Hat Pack</div>
+  <div class="card-sub">Hat niche growth pack</div>
+  <div class="price">$24.99</div>
+  <div class="tier">✔ 40 hat scripts</div>
+  <div class="tier">✔ 25 hooks</div>
+  <div class="tier">✔ Niche‑specific flows</div>
+  <div class="btn" data-product="embroideryforge-hat-pack">Buy Now</div>
+</div>
+
+<!-- EmbroideryForge Hoodie Pack -->
+<div class="card">
+  <div class="card-title">EmbroideryForge Hoodie Pack</div>
+  <div class="card-sub">Hoodie niche growth pack</div>
+  <div class="price">$24.99</div>
+  <div class="tier">✔ 40 hoodie scripts</div>
+  <div class="tier">✔ 25 hooks</div>
+  <div class="tier">✔ TikTok‑ready flows</div>
+  <div class="btn" data-product="embroideryforge-hoodie-pack">Buy Now</div>
+</div>
+
+<!-- EmbroideryForge Denim Pack -->
+<div class="card">
+  <div class="card-title">EmbroideryForge Denim Pack</div>
+  <div class="card-sub">Denim niche growth pack</div>
+  <div class="price">$29.99</div>
+  <div class="tier">✔ 50 denim scripts</div>
+  <div class="tier">✔ 30 hooks</div>
+  <div class="tier">✔ Trend‑aware flows</div>
+  <div class="btn" data-product="embroideryforge-denim-pack">Buy Now</div>
+</div>
+
+<!-- EmbroideryForge Bag Pack -->
+<div class="card">
+  <div class="card-title">EmbroideryForge Bag Pack</div>
+  <div class="card-sub">Bag niche growth pack</div>
+  <div class="price">$19.99</div>
+  <div class="tier">✔ 30 bag scripts</div>
+  <div class="tier">✔ 20 hooks</div>
+  <div class="tier">✔ Creator‑optimized</div>
+  <div class="btn" data-product="embroideryforge-bag-pack">Buy Now</div>
+</div>
+
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    ForgeCore Industries © 2026 — All Rights Reserved
+  </footer>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY'); // replace with your real publishable key
+
+  document.querySelectorAll('.btn[data-product]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const productId = btn.getAttribute('data-product');
+
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId })
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location = data.url;
+      } else {
+        alert('Checkout error. Please try again.');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

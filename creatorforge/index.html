@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CreatorForge AI™ — ForgeCore OS Edition</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* GLOBAL BACKGROUND LAYERS */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ember particles */
+    .emberCanvas {
+      width: 100%;
+      height: 100%;
+      opacity: 0.35;
+    }
+
+    /* Grid overlay */
+    .gridOverlay {
+      background-image:
+        linear-gradient(90deg, rgba(255, 106, 0, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 106, 0, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.18;
+      animation: gridDrift 18s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      0% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(-20px, -20px, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    /* MAIN APP LAYER */
+    .appRoot {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* TOP PANEL */
+    .topPanel {
+      width: 100%;
+      padding: 10px 20px 6px;
+      background: radial-gradient(circle at top, #1a1a1a 0%, #050505 40%, #000 100%);
+      border-bottom: 2px solid #ff6a00;
+      box-shadow: 0 0 25px rgba(255, 106, 0, 0.4);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .forgePulse {
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 360px;
+      height: 360px;
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .topInner {
+      text-align: center;
+    }
+
+    .topTitle {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ff9a00;
+      text-shadow: 0 0 14px #ff6a00;
+      letter-spacing: 0.12em;
+    }
+
+    .topSubtitle {
+      font-size: 12px;
+      color: #ffb347;
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    .topLinks {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      display: flex;
+      gap: 10px;
+      font-size: 11px;
+    }
+
+    .topLinkBtn {
+      padding: 6px 10px;
+      background: #ff6a00;
+      color: #000;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 0 10px #ff6a00;
+    }
+
+    .topLinkBtn:hover {
+      background: #ff9a00;
+      box-shadow: 0 0 14px #ff9a00;
+    }
+
+    /* STATUS BAR */
+    .statusBar {
+      width: 100%;
+      margin-top: 8px;
+      padding: 4px 20px;
+      font-size: 11px;
+      color: #ffb347;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 106, 0, 0.4);
+      border-bottom: 1px solid rgba(255, 106, 0, 0.2);
+      background: linear-gradient(90deg, rgba(255, 106, 0, 0.15), transparent);
+    }
+
+    .statusLabel {
+      opacity: 0.9;
+    }
+
+    .statusValue {
+      color: #7CFC00;
+    }
+
+    /* MAIN WRAPPER */
+    .mainWrapper {
+      display: flex;
+      flex: 1;
+      position: relative;
+      padding: 12px 18px 16px;
+    }
+
+    /* BACKGROUND PANEL BEHIND RIGHT CONTENT */
+    .bgPanel {
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      bottom: 16px;
+      left: 26%;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, rgba(255, 106, 0, 0.18), rgba(10, 10, 10, 0.95));
+      box-shadow:
+        0 0 30px rgba(255, 106, 0, 0.35),
+        inset 0 0 25px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255, 106, 0, 0.5);
+      filter: blur(0.3px);
+      z-index: 0;
+    }
+
+    /* LEFT PANEL */
+    .leftPanel {
+      width: 25%;
+      background: linear-gradient(180deg, #080808 0%, #111 40%, #080808 100%);
+      padding: 20px;
+      border-right: 2px solid #ff6a00;
+      box-shadow: 0 0 18px rgba(255, 120, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1;
+    }
+
+    .leftTop {
+      margin-bottom: 20px;
+    }
+
+    .leftPanel h2 {
+      color: #ff9a00;
+      text-shadow: 0 0 8px #ff6a00;
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .leftHint {
+      font-size: 12px;
+      color: #ffb347;
+      margin-bottom: 15px;
+      opacity: 0.85;
+    }
+
+    .leftButtons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .leftPanel button {
+      width: 100%;
+      padding: 11px;
+      background: #ff6a00;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff6a00;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s, color 0.2s;
+      font-size: 13px;
+    }
+
+    .leftPanel button:hover {
+      background: #ff9a00;
+      box-shadow: 0 0 15px #ff9a00;
+      transform: translateY(-1px);
+    }
+
+    .leftPanel button.activeTool {
+      background: #ffb347;
+      box-shadow: 0 0 18px #ffb347;
+      color: #111;
+    }
+
+    .leftDivider {
+      margin: 18px 0 10px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ff6a00, transparent);
+      opacity: 0.7;
+    }
+
+    .leftBottom {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .logoImg {
+      max-width: 200px;
+      width: 100%;
+      display: block;
+      margin: 0 auto 6px;
+      filter: drop-shadow(0 0 14px rgba(255, 106, 0, 0.9));
+    }
+
+    .logoCaption {
+      font-size: 11px;
+      color: #ffb347;
+      opacity: 0.9;
+    }
+
+    /* RIGHT PANEL */
+    .rightPanel {
+      width: 75%;
+      padding: 20px;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      background: rgba(10, 10, 10, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 18px rgba(255, 120, 0, 0.35);
+      border: 1px solid rgba(255, 106, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(8px) scale(0.99);
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out, box-shadow 0.25s;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      box-shadow: 0 0 24px rgba(255, 120, 0, 0.45);
+    }
+
+    section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(255, 106, 0, 0.18), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    section.hidden {
+      display: none;
+    }
+
+    /* Section-specific glow classes */
+    .glow-influencer::before {
+      background: radial-gradient(circle at top left, rgba(255, 140, 0, 0.25), transparent 60%);
+    }
+    .glow-script::before {
+      background: radial-gradient(circle at top left, rgba(255, 80, 0, 0.25), transparent 60%);
+    }
+    .glow-video::before {
+      background: radial-gradient(circle at top left, rgba(255, 40, 0, 0.25), transparent 60%);
+    }
+    .glow-calendar::before {
+      background: radial-gradient(circle at top left, rgba(255, 200, 0, 0.25), transparent 60%);
+    }
+    .glow-breed::before {
+      background: radial-gradient(circle at top left, rgba(255, 120, 0, 0.25), transparent 60%);
+    }
+    .glow-trends::before {
+      background: radial-gradient(circle at top left, rgba(255, 160, 0, 0.25), transparent 60%);
+    }
+    .glow-settings::before {
+      background: radial-gradient(circle at top left, rgba(255, 106, 0, 0.3), transparent 60%);
+    }
+
+    h3 {
+      color: #ff9a00;
+      text-shadow: 0 0 8px #ff6a00;
+      margin-top: 0;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sectionHint {
+      font-size: 12px;
+      color: #ffb347;
+      margin-bottom: 12px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #ffb347;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      background: #151515;
+      border: 1px solid #ff9a00;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+
+    input::placeholder {
+      color: #888;
+    }
+
+    .actionBtn {
+      margin-top: 15px;
+      padding: 10px 14px;
+      background: #ff6a00;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff6a00;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .actionBtn:hover {
+      background: #ff9a00;
+      box-shadow: 0 0 15px #ff9a00;
+      transform: translateY(-1px);
+    }
+
+    .outputBox {
+      margin-top: 15px;
+      padding: 12px;
+      background: #151515;
+      border-radius: 6px;
+      border: 1px solid #ff6a00;
+      box-shadow: inset 0 0 10px #ff6a00;
+      min-height: 70px;
+      white-space: pre-wrap;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .outputLabel {
+      font-size: 11px;
+      color: #ffb347;
+      margin-top: 8px;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+
+    .loadingPulse {
+      font-size: 11px;
+      color: #ffb347;
+      margin-top: 6px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .loadingPulse.visible {
+      opacity: 1;
+    }
+
+    .statusText {
+      font-size: 11px;
+      margin-top: 8px;
+      color: #ffb347;
+    }
+
+    .statusOk {
+      color: #7CFC00;
+    }
+
+    .statusWarn {
+      color: #ff6a00;
+    }
+
+    .payhipBtn {
+      margin-top: 15px;
+      display: inline-block;
+      padding: 10px 16px;
+      background: #ff6a00;
+      color: #000;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 0 12px #ff6a00;
+      font-size: 13px;
+    }
+
+    .payhipBtn:hover {
+      background: #ff9a00;
+      box-shadow: 0 0 16px #ff9a00;
+    }
+
+    /* FOOTER */
+    .footer {
+      width: 100%;
+      padding: 12px 20px;
+      background: #050505;
+      color: #ff9a00;
+      text-align: center;
+      border-top: 2px solid #ff6a00;
+      text-shadow: 0 0 8px #ff6a00;
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer a {
+      color: #ffb347;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    .footer a:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      body { overflow-y: auto; }
+      .mainWrapper {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+      }
+      .bgPanel {
+        left: 10px;
+        right: 10px;
+        top: 140px;
+        bottom: 70px;
+      }
+      .leftPanel, .rightPanel {
+        width: 100%;
+      }
+      .rightPanel {
+        padding-top: 10px;
+      }
+      .topLinks {
+        position: static;
+        margin-top: 8px;
+        justify-content: center;
+      }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
+</head>
+<body>
+  <!-- BACKGROUND LAYERS -->
+  <div class="bg-layer gridOverlay"></div>
+  <div class="bg-layer">
+    <canvas id="emberCanvas" class="emberCanvas"></canvas>
+  </div>
+
+  <!-- APP ROOT -->
+  <div class="appRoot">
+    <!-- TOP PANEL -->
+    <div class="topPanel">
+      <div class="forgePulse" id="forgePulse"></div>
+      <div class="topInner">
+        <div class="topTitle">CREATORFORGE AI™</div>
+        <div class="topSubtitle">Forge influencers, scripts, calendars, trends, and more — in a ForgeCore OS shell.</div>
+      </div>
+      <div class="topLinks">
+        <a class="topLinkBtn" href="https://payhip.com/b/Pn6sZ" target="_blank">Buy Full ForgeCore Suite</a>
+      </div>
+      <div class="statusBar">
+        <div class="statusLabel">ForgeCore OS Layer: <span class="statusValue">ONLINE</span></div>
+        <div class="statusLabel">API Key: <span id="statusApiKey" class="statusValue">Not Set</span></div>
+        <div class="statusLabel">CreatorForge AI Build: <span class="statusValue">v1.0.0 SPA</span></div>
+      </div>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="mainWrapper">
+      <div class="bgPanel"></div>
+
+      <!-- LEFT PANEL -->
+      <div class="leftPanel">
+        <div class="leftTop">
+          <h2>Influencer Tools</h2>
+          <div class="leftHint">Tap a tool to switch panels. Each module runs inside the ForgeCore OS shell.</div>
+
+          <div class="leftButtons">
+            <button id="createInfluencerBtn">Create Influencer Profile</button>
+            <button id="generateScriptBtn">Generate Video Script</button>
+            <button id="generateVideoBtn">Generate Video Plan</button>
+            <button id="generateCalendarBtn">Content Calendar</button>
+            <button id="breedInfluencerBtn">Breed Influencer</button>
+            <button id="predictTrendBtn">Predict Trends</button>
+            <button id="settingsBtn">Settings / API Key</button>
+          </div>
+
+          <div class="leftDivider"></div>
+        </div>
+
+        <div class="leftBottom">
+          <img src="creatorforge-logo.png" alt="CreatorForge AI Logo" class="logoImg">
+          <div class="logoCaption">ForgeCore Industries™ • CreatorForge AI Suite</div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="rightPanel">
+        <!-- Create Influencer -->
+        <section id="section-create" class="glow-influencer">
+          <h3>Create Influencer</h3>
+          <div class="sectionHint">Define your influencer’s personality and style, then auto-generate avatar + voice profiles.</div>
+
+          <label>Name</label>
+          <input id="nameInput" type="text" placeholder="Influencer Name (e.g. Ember Stitch, Viral Loom)">
+
+          <label>Personality</label>
+          <select id="personalityInput">
+            <option value="Energetic">Energetic</option>
+            <option value="Calm">Calm</option>
+            <option value="Funny">Funny</option>
+            <option value="Direct">Direct</option>
+          </select>
+
+          <label>Style</label>
+          <select id="styleInput">
+            <option value="Bright">Bright</option>
+            <option value="Dark">Dark</option>
+            <option value="Minimal">Minimal</option>
+            <option value="Bold">Bold</option>
+          </select>
+
+          <button id="generateInfluencerProfileBtn" class="actionBtn">Generate Influencer Profile</button>
+
+          <div class="outputLabel">Avatar Concept</div>
+          <div id="avatarBox" class="outputBox"></div>
+
+          <div class="outputLabel">Voice & Content Style</div>
+          <div id="voiceBox" class="outputBox"></div>
+
+          <div id="createLoading" class="loadingPulse">Forging profile…</div>
+        </section>
+
+        <!-- Script Output -->
+        <section id="section-script" class="hidden glow-script">
+          <h3>Script Output</h3>
+          <div class="sectionHint">Turn a topic into a full short-form script with hook, body, and CTA.</div>
+
+          <label>Topic</label>
+          <input id="topicInput" type="text" placeholder="Enter video topic (e.g. 'How to price embroidery orders')">
+          <button id="generateScriptActionBtn" class="actionBtn">Generate Script</button>
+
+          <div class="outputLabel">Generated Script</div>
+          <div id="scriptOutput" class="outputBox"></div>
+
+          <div id="scriptLoading" class="loadingPulse">Forging script…</div>
+        </section>
+
+        <!-- Video Output -->
+        <section id="section-video" class="hidden glow-video">
+          <h3>Video Output</h3>
+          <div class="sectionHint">Generate a shot-by-shot plan for a vertical video based on your concept.</div>
+
+          <label>Video Concept</label>
+          <input id="videoConceptInput" type="text" placeholder="Short concept (e.g. 'TikTok embroidery behind-the-scenes')">
+          <button id="generateVideoActionBtn" class="actionBtn">Generate Video Plan</button>
+
+          <div class="outputLabel">Storyboard & Shot List</div>
+          <div id="videoOutput" class="outputBox"></div>
+
+          <div id="videoLoading" class="loadingPulse">Forging video plan…</div>
+        </section>
+
+        <!-- Calendar Output -->
+        <section id="section-calendar" class="hidden glow-calendar">
+          <h3>Content Calendar</h3>
+          <div class="sectionHint">Generate a 7-day posting calendar around a single theme or niche.</div>
+
+          <label>Primary Theme</label>
+          <input id="calendarThemeInput" type="text" placeholder="e.g. 'Embroidery business growth', 'Influencer coaching'">
+          <button id="generateCalendarActionBtn" class="actionBtn">Generate 7-Day Calendar</button>
+
+          <div class="outputLabel">7-Day Content Plan</div>
+          <div id="calendarOutput" class="outputBox"></div>
+
+          <div id="calendarLoading" class="loadingPulse">Forging calendar…</div>
+        </section>
+
+        <!-- Breeding Output -->
+        <section id="section-breed" class="hidden glow-breed">
+          <h3>Influencer Breeding</h3>
+          <div class="sectionHint">Combine traits from two influencers to create a hybrid persona.</div>
+
+          <label>Parent 1</label>
+          <input id="parent1Input" type="text" placeholder="Parent 1 Name (e.g. 'Data Loom')">
+
+          <label>Parent 2</label>
+          <input id="parent2Input" type="text" placeholder="Parent 2 Name (e.g. 'Story Ember')">
+
+          <button id="breedInfluencerActionBtn" class="actionBtn">Breed Influencer</button>
+
+          <div class="outputLabel">Hybrid Influencer Profile</div>
+          <div id="breedOutput" class="outputBox"></div>
+
+          <div id="breedLoading" class="loadingPulse">Forging hybrid…</div>
+        </section>
+
+        <!-- Trend Output -->
+        <section id="section-trends" class="hidden glow-trends">
+          <h3>Trend Predictions</h3>
+          <div class="sectionHint">Generate upcoming content trends for your platform or niche.</div>
+
+          <label>Platform / Niche</label>
+          <input id="trendInput" type="text" placeholder="e.g. 'TikTok embroidery', 'Instagram coaching', 'YouTube tutorials'">
+          <button id="predictTrendActionBtn" class="actionBtn">Predict Trends</button>
+
+          <div class="outputLabel">Trend Forecast</div>
+          <div id="trendOutput" class="outputBox"></div>
+
+          <div id="trendLoading" class="loadingPulse">Forging trend forecast…</div>
+        </section>
+
+        <!-- Settings / API Key -->
+        <section id="section-settings" class="hidden glow-settings">
+          <h3>Settings / API Key</h3>
+          <div class="sectionHint">
+            Store your API key securely in your browser. This key is used by CreatorForge AI to connect to your AI backend.
+          </div>
+
+          <label>API Key</label>
+          <input id="apiKeyInput" type="text" placeholder="Paste your API key here">
+
+          <button id="saveApiKeyBtn" class="actionBtn">Save API Key</button>
+          <button id="testApiKeyBtn" class="actionBtn">Test API Key</button>
+
+          <div id="apiStatus" class="statusText"></div>
+
+          <div class="outputLabel">Payhip • Full ForgeCore Suite</div>
+          <a class="payhipBtn" href="https://payhip.com/b/Pn6sZ" target="_blank">Open Payhip Listing</a>
+        </section>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      Made and Designed By J.L.S. 2026 © — CreatorForge AI™ • ForgeCore Industries
+      <a href="https://payhip.com/b/Pn6sZ" target="_blank">Buy Full Suite</a>
+    </div>
+  </div>
+
+  <script>
+    // ---------- SECTION SWITCHING ----------
+    const sections = {
+      create: document.getElementById('section-create'),
+      script: document.getElementById('section-script'),
+      video: document.getElementById('section-video'),
+      calendar: document.getElementById('section-calendar'),
+      breed: document.getElementById('section-breed'),
+      trends: document.getElementById('section-trends'),
+      settings: document.getElementById('section-settings')
+    };
+
+    const buttons = {
+      create: document.getElementById('createInfluencerBtn'),
+      script: document.getElementById('generateScriptBtn'),
+      video: document.getElementById('generateVideoBtn'),
+      calendar: document.getElementById('generateCalendarBtn'),
+      breed: document.getElementById('breedInfluencerBtn'),
+      trends: document.getElementById('predictTrendBtn'),
+      settings: document.getElementById('settingsBtn')
+    };
+
+    function showSection(key) {
+      Object.values(sections).forEach(sec => {
+        sec.classList.add('hidden');
+        sec.classList.remove('visible');
+      });
+      Object.values(buttons).forEach(btn => btn.classList.remove('activeTool'));
+
+      const target = sections[key];
+      target.classList.remove('hidden');
+      setTimeout(() => target.classList.add('visible'), 10);
+      buttons[key].classList.add('activeTool');
+    }
+
+    buttons.create.addEventListener('click', () => showSection('create'));
+    buttons.script.addEventListener('click', () => showSection('script'));
+    buttons.video.addEventListener('click', () => showSection('video'));
+    buttons.calendar.addEventListener('click', () => showSection('calendar'));
+    buttons.breed.addEventListener('click', () => showSection('breed'));
+    buttons.trends.addEventListener('click', () => showSection('trends'));
+    buttons.settings.addEventListener('click', () => {
+      showSection('settings');
+      loadStoredApiKey();
+    });
+
+    // Default section
+    showSection('create');
+
+    // ---------- LOADING HELPERS ----------
+    function withLoading(loadingEl, fn) {
+      loadingEl.classList.add('visible');
+      setTimeout(() => {
+        fn();
+        loadingEl.classList.remove('visible');
+      }, 250);
+    }
+
+    // ---------- CREATE INFLUENCER ----------
+    const nameInput = document.getElementById('nameInput');
+    const personalityInput = document.getElementById('personalityInput');
+    const styleInput = document.getElementById('styleInput');
+    const avatarBox = document.getElementById('avatarBox');
+    const voiceBox = document.getElementById('voiceBox');
+    const generateInfluencerProfileBtn = document.getElementById('generateInfluencerProfileBtn');
+    const createLoading = document.getElementById('createLoading');
+
+    generateInfluencerProfileBtn.addEventListener('click', () => {
+      withLoading(createLoading, () => {
+        const name = nameInput.value.trim() || 'Unnamed Influencer';
+        const personality = personalityInput.value;
+        const style = styleInput.value;
+
+        const avatarDescription =
+          `${name} is a ${personality.toLowerCase()} creator with a ${style.toLowerCase()} visual style.\n\n` +
+          `Avatar Concept:\n` +
+          `• Profile photo: ${style} cinematic portrait with molten orange accents\n` +
+          `• Color palette: deep blacks, ember oranges, and subtle highlights\n` +
+          `• Brand vibe: ${personality} but intentional, built for long-term audience trust.`;
+
+        const voiceDescription =
+          `Voice Profile for ${name}:\n\n` +
+          `• Tone: ${personality}\n` +
+          `• Delivery: ${style} pacing with clear hooks and strong calls-to-action\n` +
+          `• Content style: short-form clips, carousels, and story-driven posts.\n` +
+          `• Goal: build authority while staying human, relatable, and consistent.`;
+
+        avatarBox.textContent = avatarDescription;
+        voiceBox.textContent = voiceDescription;
+      });
+    });
+
+    // ---------- SCRIPT GENERATOR ----------
+    const topicInput = document.getElementById('topicInput');
+    const scriptOutput = document.getElementById('scriptOutput');
+    const generateScriptActionBtn = document.getElementById('generateScriptActionBtn');
+    const scriptLoading = document.getElementById('scriptLoading');
+
+    generateScriptActionBtn.addEventListener('click', () => {
+      withLoading(scriptLoading, () => {
+        const topic = topicInput.value.trim() || 'your niche topic';
+
+        const script =
+          `HOOK (0–3 seconds):\n` +
+          `“If you’re serious about ${topic}, stop scrolling for a second.”\n\n` +
+          `INTRO (3–10 seconds):\n` +
+          `“I’m going to show you exactly how to approach ${topic} without burning out or wasting time.”\n\n` +
+          `BODY (10–45 seconds):\n` +
+          `1. Problem: Why most people fail at ${topic}.\n` +
+          `2. Shift: The mindset or system that actually works.\n` +
+          `3. Steps: 3–5 clear actions they can take today.\n\n` +
+          `CTA (45–60 seconds):\n` +
+          `“If this helped, follow for more ${topic} breakdowns and save this so you don’t forget.”`;
+
+        scriptOutput.textContent = script;
+      });
+    });
+
+    // ---------- VIDEO PLAN ----------
+    const videoConceptInput = document.getElementById('videoConceptInput');
+    const videoOutput = document.getElementById('videoOutput');
+    const generateVideoActionBtn = document.getElementById('generateVideoActionBtn');
+    const videoLoading = document.getElementById('videoLoading');
+
+    generateVideoActionBtn.addEventListener('click', () => {
+      withLoading(videoLoading, () => {
+        const concept = videoConceptInput.value.trim() || 'your main idea';
+
+        const plan =
+          `Video Plan for: ${concept}\n\n` +
+          `SHOT 1 — Hook (0–3s)\n` +
+          `• Close-up shot\n` +
+          `• Bold on-screen text summarizing the promise\n\n` +
+          `SHOT 2 — Context (3–10s)\n` +
+          `• Medium shot\n` +
+          `• Explain why this matters and who it’s for\n\n` +
+          `SHOT 3 — Breakdown (10–40s)\n` +
+          `• Over-the-shoulder or screen recording\n` +
+          `• Show the actual steps, tools, or examples\n\n` +
+          `SHOT 4 — CTA (40–60s)\n` +
+          `• Direct eye contact\n` +
+          `• Invite them to follow, comment, or save.`;
+
+        videoOutput.textContent = plan;
+      });
+    });
+
+    // ---------- CONTENT CALENDAR ----------
+    const calendarThemeInput = document.getElementById('calendarThemeInput');
+    const calendarOutput = document.getElementById('calendarOutput');
+    const generateCalendarActionBtn = document.getElementById('generateCalendarActionBtn');
+    const calendarLoading = document.getElementById('calendarLoading');
+
+    generateCalendarActionBtn.addEventListener('click', () => {
+      withLoading(calendarLoading, () => {
+        const theme = calendarThemeInput.value.trim() || 'your niche';
+
+        const calendar =
+          `7-Day Content Calendar for: ${theme}\n\n` +
+          `Day 1 — Story Post\n` +
+          `• Origin story: how you started and why ${theme} matters.\n\n` +
+          `Day 2 — Value Carousel\n` +
+          `• 3–5 tips that solve a common problem.\n\n` +
+          `Day 3 — Short Video\n` +
+          `• Quick breakdown of one tip from Day 2.\n\n` +
+          `Day 4 — Behind-the-Scenes\n` +
+          `• Show your workflow, tools, or process.\n\n` +
+          `Day 5 — Social Proof\n` +
+          `• Share a win, testimonial, or result.\n\n` +
+          `Day 6 — Deep-Dive Post\n` +
+          `• Long-form caption explaining a key concept.\n\n` +
+          `Day 7 — Call-to-Action\n` +
+          `• Invite people to DM, join your list, or buy.`;
+
+        calendarOutput.textContent = calendar;
+      });
+    });
+
+    // ---------- BREEDING ----------
+    const parent1Input = document.getElementById('parent1Input');
+    const parent2Input = document.getElementById('parent2Input');
+    const breedOutput = document.getElementById('breedOutput');
+    const breedInfluencerActionBtn = document.getElementById('breedInfluencerActionBtn');
+    const breedLoading = document.getElementById('breedLoading');
+
+    breedInfluencerActionBtn.addEventListener('click', () => {
+      withLoading(breedLoading, () => {
+        const p1 = parent1Input.value.trim() || 'Parent 1';
+        const p2 = parent2Input.value.trim() || 'Parent 2';
+
+        const childName = `${p1.split(' ')[0]}-${p2.split(' ')[0]} Hybrid`;
+
+        const description =
+          `New Hybrid Influencer: ${childName}\n\n` +
+          `• Inherits authority from ${p1} and relatability from ${p2}.\n` +
+          `• Content style: a blend of both — educational but entertaining.\n` +
+          `• Platform focus: short-form video plus carousels.\n` +
+          `• Goal: build a brand that feels familiar but fresh.`;
+
+        breedOutput.textContent = description;
+      });
+    });
+
+    // ---------- TREND PREDICTIONS ----------
+    const trendInput = document.getElementById('trendInput');
+    const trendOutput = document.getElementById('trendOutput');
+    const predictTrendActionBtn = document.getElementById('predictTrendActionBtn');
+    const trendLoading = document.getElementById('trendLoading');
+
+    predictTrendActionBtn.addEventListener('click', () => {
+      withLoading(trendLoading, () => {
+        const niche = trendInput.value.trim() || 'your niche';
+
+        const trends =
+          `Trend Predictions for: ${niche}\n\n` +
+          `1. Micro-stories over long tutorials\n` +
+          `   • Short, emotional clips that show one moment or transformation.\n\n` +
+          `2. “Before / After” content\n` +
+          `   • Visual proof of progress, especially for ${niche}.\n\n` +
+          `3. Community-led challenges\n` +
+          `   • Hashtag-based series that invite followers to participate.\n\n` +
+          `4. Raw, unfiltered clips\n` +
+          `   • Less polished, more honest — behind-the-scenes and real talk.\n\n` +
+          `5. Educational hooks with fast payoffs\n` +
+          `   • “Here’s the one thing you’re missing in ${niche}…” followed by a clear answer.`;
+
+        trendOutput.textContent = trends;
+      });
+    });
+
+    // ---------- SETTINGS / API KEY ----------
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+    const testApiKeyBtn = document.getElementById('testApiKeyBtn');
+    const apiStatus = document.getElementById('apiStatus');
+    const statusApiKey = document.getElementById('statusApiKey');
+    const API_KEY_STORAGE = 'creatorforge_api_key';
+
+    function loadStoredApiKey() {
+      const stored = localStorage.getItem(API_KEY_STORAGE);
+      if (stored) {
+        apiKeyInput.value = stored;
+        apiStatus.textContent = 'API key loaded from browser storage.';
+        apiStatus.classList.remove('statusWarn');
+        apiStatus.classList.add('statusOk');
+        statusApiKey.textContent = 'Set';
+      } else {
+        apiStatus.textContent = 'No API key saved yet. Paste and save to enable backend calls.';
+        apiStatus.classList.remove('statusOk');
+        apiStatus.classList.add('statusWarn');
+        statusApiKey.textContent = 'Not Set';
+      }
+    }
+
+    saveApiKeyBtn.addEventListener('click', () => {
+      const key = apiKeyInput.value.trim();
+      if (!key) {
+        apiStatus.textContent = 'API key is empty. Please paste a valid key.';
+        apiStatus.classList.remove('statusOk');
+        apiStatus.classList.add('statusWarn');
+        statusApiKey.textContent = 'Not Set';
+        return;
+      }
+      localStorage.setItem(API_KEY_STORAGE, key);
+      apiStatus.textContent = 'API key saved locally in your browser.';
+      apiStatus.classList.remove('statusWarn');
+      apiStatus.classList.add('statusOk');
+      statusApiKey.textContent = 'Set';
+    });
+
+    testApiKeyBtn.addEventListener('click', () => {
+      const key = localStorage.getItem(API_KEY_STORAGE);
+      if (!key) {
+        apiStatus.textContent = 'No API key found. Save a key first.';
+        apiStatus.classList.remove('statusOk');
+        apiStatus.classList.add('statusWarn');
+        statusApiKey.textContent = 'Not Set';
+      } else {
+        apiStatus.textContent = 'API key is present. Backend calls can use this key.';
+        apiStatus.classList.remove('statusWarn');
+        apiStatus.classList.add('statusOk');
+        statusApiKey.textContent = 'Set';
+      }
+    });
+
+    // ---------- EMBER PARTICLE BACKGROUND ----------
+    const emberCanvas = document.getElementById('emberCanvas');
+    const ctx = emberCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      emberCanvas.width = window.innerWidth;
+      emberCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createParticles(count) {
+      particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * emberCanvas.width,
+          y: Math.random() * emberCanvas.height,
+          r: Math.random() * 2 + 0.5,
+          dx: (Math.random() - 0.5) * 0.2,
+          dy: (Math.random() - 0.5) * 0.2,
+          alpha: Math.random() * 0.6 + 0.2
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, emberCanvas.width, emberCanvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 106, 0, ${p.alpha})`;
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0) p.x = emberCanvas.width;
+        if (p.x > emberCanvas.width) p.x = 0;
+        if (p.y < 0) p.y = emberCanvas.height;
+        if (p.y > emberCanvas.height) p.y = 0;
+      });
+      requestAnimationFrame(drawParticles);
+    }
+
+    createParticles(140);
+    drawParticles();
+
+    // ---------- FORGE PULSE ANIMATION ----------
+    const forgePulseContainer = document.getElementById('forgePulse');
+
+    const forgePulseData = {
+      "v": "5.7.4",
+      "fr": 30,
+      "ip": 0,
+      "op": 60,
+      "w": 512,
+      "h": 512,
+      "nm": "forge-pulse",
+      "ddd": 0,
+      "assets": [],
+      "layers": [
+        {
+          "ddd": 0,
+          "ind": 1,
+          "ty": 4,
+          "nm": "Pulse Shape",
+          "sr": 1,
+          "ks": {
+            "o": { "a": 1, "k": [
+              { "t": 0, "s": [40] },
+              { "t": 30, "s": [100] },
+              { "t": 60, "s": [40] }
+            ]},
+            "r": { "a": 0, "k": 0 },
+            "p": { "a": 0, "k": [256, 256, 0] },
+            "a": { "a": 0, "k": [0, 0, 0] },
+            "s": { "a": 1, "k": [
+              { "t": 0, "s": [100, 100, 100] },
+              { "t": 30, "s": [115, 115, 100] },
+              { "t": 60, "s": [100, 100, 100] }
+            ]}
+          },
+          "shapes": [
+            {
+              "ty": "el",
+              "p": { "a": 0, "k": [0, 0] },
+              "s": { "a": 0, "k": [300, 300] },
+              "nm": "Ellipse Path"
+            },
+            {
+              "ty": "fl",
+              "c": { "a": 0, "k": [1, 0.6, 0.2, 1] },
+              "o": { "a": 0, "k": 100 },
+              "nm": "Forge Glow Fill"
+            }
+          ],
+          "ao": 0
+        }
+      ]
+    };
+
+    if (window.lottie && forgePulseContainer) {
+      lottie.loadAnimation({
+        container: forgePulseContainer,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        animationData: forgePulseData
+      });
+    }
+  </script>
+</body>
+</html>
