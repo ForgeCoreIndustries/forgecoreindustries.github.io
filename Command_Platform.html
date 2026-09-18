@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<title> ForgeCore Industries — Command Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        jet: '#0a0a0a',
+        sidebar: '#050505',
+        card: '#111111',
+        card2: '#0d0d0d',
+        amber: { DEFAULT: '#f59e0b', light: '#fbbf24', deep: '#d97706' },
+        glow: 'rgba(245,158,11,0.25)',
+        success: '#10b981',
+        danger: '#ef4444',
+        info: '#3b82f6',
+      },
+      fontFamily: {
+        display: ['Space Grotesk', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+      },
+      borderRadius: { xl2: '12px' },
+    },
+  },
+};
+</script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --jet:#0a0a0a;--sidebar:#050505;--card:#111111;--card2:#0d0d0d;
+  --amber:#f59e0b;--amber-light:#fbbf24;--amber-deep:#d97706;
+  --glow:rgba(245,158,11,0.25);--text-white:#ffffff;--text-body:#e5e7eb;
+  --text-muted:#9ca3af;--success:#10b981;--danger:#ef4444;--info:#3b82f6;--radius:12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--jet); color: var(--text-body); overflow-x: hidden; }
+h1,h2,h3,h4,h5,h6 { font-family: 'Space Grotesk', sans-serif; color: var(--text-white); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--amber); }
+input,select,textarea { font-family: 'Inter', sans-serif; }
+.sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+.sidebar-link:hover, .sidebar-link.active { background: rgba(245,158,11,0.08); color: var(--amber); }
+.sidebar-link.active { border-left: 3px solid var(--amber); }
+.kpi-card { background: var(--card); border-left: 4px solid var(--amber); border-radius: var(--radius); padding: 20px 24px; transition: box-shadow 0.3s; }
+.kpi-card:hover { box-shadow: 0 0 20px var(--glow); }
+.badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-active { background: rgba(245,158,11,0.15); color: var(--amber); }
+.badge-inactive { background: rgba(156,163,175,0.15); color: var(--text-muted); }
+.badge-pending { background: rgba(59,130,246,0.15); color: var(--info); }
+.badge-refunded { background: rgba(239,68,68,0.15); color: var(--danger); }
+.badge-trial { background: rgba(168,85,247,0.15); color: #a855f7; }
+.badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-expired { background: rgba(239,68,68,0.15); color: var(--danger); }
+.badge-revoked { background: rgba(156,163,175,0.15); color: var(--text-muted); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-card { background: var(--card); border-top: 4px solid var(--amber); border-radius: var(--radius); max-width: 560px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 24px; }
+.form-input { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; color: var(--text-white); font-size: 14px; transition: border-color 0.2s; }
+.form-input:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 2px var(--glow); }
+.btn-amber { background: var(--amber); color: #000; font-weight: 600; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+.btn-amber:hover { background: var(--amber-light); transform: translateY(-1px); }
+.btn-outline { background: transparent; border: 1px solid var(--amber); color: var(--amber); font-weight: 500; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+.btn-outline:hover { background: rgba(245,158,11,0.1); }
+.btn-danger { background: var(--danger); color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
+.toggle-switch { position: relative; width: 44px; height: 24px; background: #333; border-radius: 12px; cursor: pointer; transition: background 0.3s; }
+.toggle-switch.active { background: var(--amber); }
+.toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform 0.3s; }
+.toggle-switch.active::after { transform: translateX(20px); }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead th { padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--amber); font-weight: 600; border-bottom: 1px solid #222; cursor: pointer; white-space: nowrap; user-select: none; }
+.data-table tbody td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #1a1a1a; }
+.data-table tbody tr { transition: background 0.15s; }
+.data-table tbody tr:nth-child(even) { background: var(--card2); }
+.data-table tbody tr:hover { background: rgba(245,158,11,0.05); }
+.toast { position: fixed; top: 20px; right: 20px; z-index: 200; padding: 14px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; color: #fff; animation: slideIn 0.3s ease-out, fadeOut 0.4s 2.6s ease-in forwards; max-width: 380px; }
+.toast-success { background: #111; border: 1px solid var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+.toast-error { background: #111; border: 1px solid var(--danger); box-shadow: 0 0 15px rgba(239,68,68,0.3); }
+.toast-info { background: #111; border: 1px solid var(--amber); box-shadow: 0 0 15px var(--glow); }
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+.page { display: none; }
+.page.active { display: block; }
+.tab-btn { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; background: transparent; color: var(--text-muted); transition: all 0.2s; }
+.tab-btn.active { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.quick-card { background: var(--card); border: 1px solid #222; border-radius: var(--radius); padding: 20px; cursor: pointer; transition: all 0.3s; }
+.quick-card:hover { border-color: var(--amber); box-shadow: 0 0 20px var(--glow); transform: translateY(-2px); }
+.section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.empty-state p { margin-top: 8px; font-size: 14px; }
+.integration-card { background: var(--card); border: 1px solid #222; border-radius: var(--radius); padding: 24px; transition: all 0.3s; }
+.integration-card:hover { border-color: #444; }
+.lock-screen { position: fixed; inset: 0; background: var(--jet); z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+@media (max-width: 767px) {
+  .sidebar-desktop { transform: translateX(-100%); position: fixed; z-index: 50; }
+  .sidebar-desktop.mobile-open { transform: translateX(0); }
+}
+</style>
+</head>
+<body data-id="0" class="bg-jet min-h-screen">
+<app-icon data-id="1" hidden data-icon="layout-dashboard" data-palette="Yellow"></app-icon>
+
+<!-- LOCK SCREEN -->
+<div data-id="2" id="lock-screen-a1b2" class="lock-screen" style="display:none;">
+  <div data-id="3" class="text-center">
+    <div data-id="4" class="w-16 h-16 rounded-full bg-amber flex items-center justify-center mx-auto mb-6">
+      <span data-id="5" class="text-2xl font-bold text-black font-display">GT</span>
+    </div>
+    <h2 data-id="6" class="text-xl font-display text-white mb-2"> ForgeCore Industries — Locked</h2>
+    <p data-id="7" class="text-sm text-gray-400 mb-6">Enter your 4-digit PIN to unlock</p>
+    <input data-id="8" type="password" id="lock-pin-input-c3d4" maxlength="4" class="form-input text-center text-2xl tracking-[12px] w-48 mx-auto mb-4" placeholder="••••" />
+    <br data-id="9"/>
+    <button data-id="10" id="lock-unlock-btn-e5f6" class="btn-amber mt-2">Unlock</button>
+    <p data-id="11" id="lock-error-g7h8" class="text-danger text-xs mt-3" style="display:none;">Incorrect PIN. Try again.</p>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div data-id="12" id="toast-container-i9j0"></div>
+
+<!-- MODAL CONTAINER -->
+<div data-id="13" id="modal-container-k1l2"></div>
+
+<!-- LAYOUT -->
+<div data-id="14" class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside data-id="15" id="sidebar-m3n4" class="sidebar-desktop w-[260px] bg-sidebar border-t-[3px] border-amber flex flex-col fixed h-full transition-transform duration-300">
+  <div data-id="16" class="p-5 pb-3">
+    <div data-id="17" class="flex items-center gap-3 mb-1">
+      <div data-id="18" class="w-9 h-9 rounded-lg bg-amber flex items-center justify-center">
+        <span data-id="19" class="font-bold text-black font-display text-sm">FC</span>
+      </div>
+      <div data-id="20">
+        <h1 data-id="21" class="text-sm font-display font-bold text-white leading-tight"> ForgeCore Industries</h1>
+        <p data-id="22" class="text-[10px] text-gray-500 uppercase tracking-wider">Command Platform</p>
+      </div>
+    </div>
+  </div>
+  <nav data-id="23" class="flex-1 px-3 space-y-1 overflow-y-auto" id="sidebar-nav-o5p6">
+    <div data-id="24" class="sidebar-link active" data-page="dashboard"><span data-id="25" class="text-lg w-6 text-center">⚡</span><span data-id="26" class="nav-label">Dashboard</span></div>
+    <div data-id="27" class="sidebar-link" data-page="products"><span data-id="28" class="text-lg w-6 text-center">📦</span><span data-id="29" class="nav-label">Products</span></div>
+    <div data-id="30" class="sidebar-link" data-page="customers"><span data-id="31" class="text-lg w-6 text-center">👥</span><span data-id="32" class="nav-label">Customers</span></div>
+    <div data-id="33" class="sidebar-link" data-page="orders"><span data-id="34" class="text-lg w-6 text-center">🧾</span><span data-id="35" class="nav-label">Orders</span></div>
+    <div data-id="36" class="sidebar-link" data-page="payments"><span data-id="37" class="text-lg w-6 text-center">💳</span><span data-id="38" class="nav-label">Payment Hub</span></div>
+    <div data-id="39" class="sidebar-link" data-page="credits"><span data-id="40" class="text-lg w-6 text-center">🔋</span><span data-id="41" class="nav-label">Credit Engine</span></div>
+    <div data-id="42" class="sidebar-link" data-page="licenses"><span data-id="43" class="text-lg w-6 text-center">🔑</span><span data-id="44" class="nav-label">License Manager</span></div>
+    <div data-id="45" class="sidebar-link" data-page="analytics"><span data-id="46" class="text-lg w-6 text-center">📊</span><span data-id="47" class="nav-label">Analytics</span></div>
+    <div data-id="48" class="sidebar-link" data-page="settings"><span data-id="49" class="text-lg w-6 text-center">⚙️</span><span data-id="50" class="nav-label">Settings</span></div>
+	<div class="sidebar-link" data-page="launcher">
+  <span class="text-lg w-6 text-center">🚀</span>
+  <span class="nav-label">App Launcher</span>
+</div>
+  </nav>
+  <div data-id="51" class="p-4 border-t border-gray-800">
+    <div data-id="52" class="flex items-center justify-between text-xs text-gray-500">
+      <span data-id="53"> ForgeCore Industries v1.0</span>
+      <span data-id="54" class="flex items-center gap-1"><span data-id="55" class="text-amber">●</span> Live</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MOBILE MENU BUTTON -->
+<button data-id="56" id="mobile-menu-btn-q7r8" class="md:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-lg bg-card flex items-center justify-center border border-gray-700">
+  <i data-id="57" data-lucide="menu" class="w-5 h-5 text-amber"></i>
+</button>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div data-id="58" id="sidebar-overlay-s9t0" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+<!-- MAIN CONTENT -->
+<div data-id="59" class="flex-1 md:ml-[260px]">
+  <!-- TOP HEADER -->
+  <header data-id="60" class="sticky top-0 z-30 bg-jet/80 backdrop-blur-lg border-b border-gray-800/50 px-4 md:px-8 py-4 flex items-center justify-between">
+    <div data-id="61" class="md:ml-0 ml-12">
+      <h2 data-id="62" id="page-title-u1v2" class="text-lg font-display font-bold text-white">Dashboard</h2>
+      <p data-id="63" id="page-subtitle-w3x4" class="text-xs text-gray-500">Welcome back,  ForgeCore Industries</p>
+    </div>
+    <div data-id="64" class="flex items-center gap-3">
+      <button data-id="65" id="global-search-btn-y5z6" class="w-9 h-9 rounded-lg bg-card border border-gray-700 flex items-center justify-center hover:border-amber transition-colors">
+        <i data-id="66" data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+      </button>
+      <div data-id="67" class="w-9 h-9 rounded-full bg-amber flex items-center justify-center">
+        <span data-id="68" class="text-xs font-bold text-black font-display">GT</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- GLOBAL SEARCH OVERLAY -->
+  <div data-id="69" id="global-search-overlay-a2b3" class="fixed inset-0 bg-black/60 z-50 hidden flex items-start justify-center pt-24 backdrop-blur-sm">
+    <div data-id="70" class="bg-card border border-gray-700 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
+      <div data-id="71" class="flex items-center gap-3 px-4 py-3 border-b border-gray-800">
+        <i data-id="72" data-lucide="search" class="w-5 h-5 text-amber"></i>
+        <input data-id="73" id="global-search-input-c4d5" type="text" class="bg-transparent text-white flex-1 outline-none text-sm" placeholder="Search customers, orders, products…" />
+        <button data-id="74" id="global-search-close-e6f7" class="text-gray-500 hover:text-white text-xs">ESC</button>
+      </div>
+      <div data-id="75" id="global-search-results-g8h9" class="max-h-80 overflow-y-auto p-3"></div>
+    </div>
+  </div>
+
+  <!-- PAGES CONTAINER -->
+  <div data-id="76" class="p-4 md:p-8">
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <div data-id="77" id="page-dashboard" class="page active">
+      <!-- KPI ROW -->
+      <div data-id="78" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div data-id="79" class="kpi-card"><p data-id="80" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Revenue</p><p data-id="81" id="kpi-revenue-i1j2" class="text-2xl font-display font-bold text-white tabular-nums">$0.00</p></div>
+        <div data-id="82" class="kpi-card"><p data-id="83" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Active Customers</p><p data-id="84" id="kpi-customers-k3l4" class="text-2xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="85" class="kpi-card"><p data-id="86" class="text-xs text-gray-500 uppercase tracking-wider mb-1">AI Credits Issued</p><p data-id="87" id="kpi-credits-m5n6" class="text-2xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="88" class="kpi-card"><p data-id="89" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Active Licenses</p><p data-id="90" id="kpi-licenses-o7p8" class="text-2xl font-display font-bold text-white tabular-nums">0</p></div>
+      </div>
+      <!-- SECOND ROW -->
+      <div data-id="91" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div data-id="92" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h3 data-id="93" class="section-title">Recent Orders</h3>
+          <div data-id="94" id="dash-recent-orders-q9r0" class="overflow-x-auto"></div>
+        </div>
+        <div data-id="95" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h3 data-id="96" class="section-title">Top Products</h3>
+          <div data-id="97" id="dash-top-products-s1t2"></div>
+        </div>
+      </div>
+<!-- ==================== APP LAUNCHER ==================== -->
+<div id="page-launcher" class="page hidden">
+  <h3 class="section-title mb-6">ForgeCore OS — App Launcher</h3>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- CreatorForge -->
+    <a href="https://forgecoreindustries.com/creatorforge" class="quick-card p-6 text-center hover:border-amber transition-all">
+      <span class="text-3xl">🎨</span>
+      <p class="text-white font-medium mt-3">CreatorForge OS Edition</p>
+      <p class="text-xs text-gray-500">AI Logo & Brand Engine</p>
+    </a>
+
+    <!-- InfluenceForge -->
+    <a href="https://forgecoreindustries.com/influenceforge" class="quick-card p-6 text-center hover:border-amber transition-all">
+      <span class="text-3xl">👑</span>
+      <p class="text-white font-medium mt-3">InfluenceForge OS Edition</p>
+      <p class="text-xs text-gray-500">Influencer AI System</p>
+    </a>
+
+    <!-- ViralForge -->
+    <a href="https://forgecoreindustries.com/viralforge" class="quick-card p-6 text-center hover:border-amber transition-all">
+      <span class="text-3xl">🔥</span>
+      <p class="text-white font-medium mt-3">ViralForge AI</p>
+      <p class="text-xs text-gray-500">Viral Content Generator</p>
+    </a>
+
+    <!-- EmbroideryForge -->
+    <a href="https://forgecoreindustries.com/embroideryforge" class="quick-card p-6 text-center hover:border-amber transition-all">
+      <span class="text-3xl">🧵</span>
+      <p class="text-white font-medium mt-3">EmbroideryForge AI</p>
+      <p class="text-xs text-gray-500">Embroidery Design Engine</p>
+    </a>
+
+    <!-- OneTap LogoBuilder -->
+    <a href="https://forgecoreindustries.com/onetaplogo" class="quick-card p-6 text-center hover:border-amber transition-all">
+      <span class="text-3xl">✨</span>
+      <p class="text-white font-medium mt-3">OneTap LogoBuilder</p>
+      <p class="text-xs text-gray-500">Instant Logo Generator</p>
+    </a>
+	
+	<hr class="border-amber my-6">
+	
+
+<!-- ⭐ ADMIN RESTORE DASHBOARD (ENHANCED CARD) -->
+<a href="admin-restore.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">🛡️</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">Admin Restore Dashboard</p>
+  <p class="text-xs text-red-400 font-semibold mt-1">Admin‑Only • Recover Deleted Rows</p>
+</a>
+
+
+  </div>
+</div>
+      <!-- QUICK ACTIONS -->
+      <div data-id="98">
+        <h3 data-id="99" class="section-title">Quick Actions</h3>
+        <div data-id="100" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div data-id="101" class="quick-card" data-action="new-order"><span data-id="102" class="text-2xl">➕</span><p data-id="103" class="text-white font-medium mt-2">New Order</p><p data-id="104" class="text-xs text-gray-500">Create a new order</p></div>
+          <div data-id="105" class="quick-card" data-action="add-customer"><span data-id="106" class="text-2xl">👤</span><p data-id="107" class="text-white font-medium mt-2">Add Customer</p><p data-id="108" class="text-xs text-gray-500">Register a new customer</p></div>
+          <div data-id="109" class="quick-card" data-action="gen-license"><span data-id="110" class="text-2xl">🔑</span><p data-id="111" class="text-white font-medium mt-2">Generate License</p><p data-id="112" class="text-xs text-gray-500">Create a license key</p></div>
+          <div data-id="113" class="quick-card" data-action="export-data"><span data-id="114" class="text-2xl">📤</span><p data-id="115" class="text-white font-medium mt-2">Export Data</p><p data-id="116" class="text-xs text-gray-500">Download all platform data</p></div>
+        </div>
+      </div>
+    </div>
+<!-- ========================= -->
+<!-- ⭐ ADMIN SECTION (FORGECORE) -->
+<!-- ========================= -->
+
+<div class="mt-12 p-6 rounded-lg"
+     style="
+        border: 2px solid #FF3A00;
+        background: #140000;
+        box-shadow: 0 0 25px #FF3A00AA;
+     ">
+
+  <h2 class="text-white text-xl font-bold tracking-wide uppercase mb-4"
+      style="color:#FF3A00;">
+    Admin Control Center
+  </h2>
+
+  <p class="text-red-400 text-xs font-semibold mb-6">
+    Restricted Access • Authorized ForgeCore Administrators Only
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- ⭐ ADMIN RESTORE DASHBOARD -->
+    <a href="admin-restore.html"
+       class="quick-card p-6 text-center transition-all"
+       style="
+          border: 3px solid #FF3A00;
+          background: #1A0000;
+          box-shadow: 0 0 18px #FF3A00AA;
+          transform: scale(1.02);
+       ">
+      <span class="text-4xl">🛡️</span>
+      <p class="text-white font-bold mt-3 tracking-wide uppercase">
+        Admin Restore Dashboard
+      </p>
+      <p class="text-xs text-red-400 font-semibold mt-1">
+        Recover & Manage Deleted Rows
+      </p>
+    </a>
+<!-- ⭐ ADMIN SYSTEM LOGS VIEWER -->
+<a href="admin-logs.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">📜</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    System Logs Viewer
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    View Errors, Events & Admin Activity
+  </p>
+</a>
+<!-- ⭐ ADMIN ANALYTICS DASHBOARD -->
+<a href="admin-analytics.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">📊</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Admin Analytics
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    Platform Metrics & Insights
+  </p>
+</a>
+<!-- ⭐ ADMIN USER MANAGER -->
+<a href="admin-users.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">👥</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Admin Users
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    Manage Platform Users
+  </p>
+</a>
+<!-- ⭐ ADMIN SYSTEM MONITOR -->
+<a href="admin-system.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">🖥️</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    System Monitor
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    API • DB • Logs • Health
+  </p>
+</a>
+<!-- ⭐ ADMIN ERROR INSPECTOR -->
+<a href="admin-errors.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">⚠️</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Error Inspector
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    View & Analyze System Errors
+  </p>
+</a>
+<!-- ⭐ ADMIN ACTIVITY TIMELINE -->
+<a href="admin-activity.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">📅</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Activity Timeline
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    Full System Activity Feed
+  </p>
+</a>
+<!-- ⭐ ADMIN SUPABASE INSPECTOR -->
+<a href="admin-supabase-inspector.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">🧩</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Supabase Inspector
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    Tables • Structure • Data
+  </p>
+</a>
+<!-- ⭐ ADMIN SECURITY CENTER -->
+<a href="admin-security.html"
+   class="quick-card p-6 text-center transition-all"
+   style="
+      border: 3px solid #FF3A00;
+      background: #1A0000;
+      box-shadow: 0 0 18px #FF3A00AA;
+      transform: scale(1.02);
+   ">
+  <span class="text-4xl">🔐</span>
+  <p class="text-white font-bold mt-3 tracking-wide uppercase">
+    Security Center
+  </p>
+  <p class="text-xs text-red-400 font-semibold mt-1">
+    Admins • Auth • Security Events
+  </p>
+</a>
+
+    <!-- ⭐ FUTURE ADMIN MODULE SLOT -->
+    <a href="#"
+       class="quick-card p-6 text-center transition-all"
+       style="
+          border: 3px dashed #FF3A00;
+          background: #1A0000;
+          opacity: 0.4;
+       ">
+      <span class="text-4xl">⚙️</span>
+      <p class="text-white font-bold mt-3 tracking-wide uppercase">
+        Coming Soon
+      </p>
+      <p class="text-xs text-red-400 font-semibold mt-1">
+        Additional Admin Tools
+      </p>
+    </a>
+
+  </div>
+</div>
+
+    <!-- ==================== PRODUCTS ==================== -->
+    <div data-id="117" id="page-products" class="page">
+      <div data-id="118" class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h3 data-id="119" class="text-xl font-display font-bold text-white">Product Catalog</h3>
+        <button data-id="120" id="add-product-btn-u3v4" class="btn-amber text-sm">+ Add Product</button>
+      </div>
+      <div data-id="121" class="flex gap-2 mb-5">
+        <button data-id="122" class="tab-btn active prod-tab" data-prodtab="apps">Apps (<span data-id="123" id="apps-count-w5x6">6</span>)</button>
+        <button data-id="124" class="tab-btn prod-tab" data-prodtab="packs">Add-On Packs (<span data-id="125" id="packs-count-y7z8">40</span>)</button>
+      </div>
+      <div data-id="126" id="products-apps-tab" class="overflow-x-auto"></div>
+      <div data-id="127" id="products-packs-tab" style="display:none;">
+        <div data-id="128" class="flex items-center gap-3 mb-4">
+          <label data-id="129" class="text-xs text-gray-500">Filter by App:</label>
+          <select data-id="130" id="pack-filter-a9b0" class="form-input w-auto text-sm py-2">
+            <option data-id="131" value="all">All Apps</option>
+          </select>
+        </div>
+        <div data-id="132" class="overflow-x-auto" id="packs-table-container-c1d2"></div>
+      </div>
+    </div>
+
+    <!-- ==================== CUSTOMERS ==================== -->
+    <div data-id="133" id="page-customers" class="page">
+      <div data-id="134" class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h3 data-id="135" class="text-xl font-display font-bold text-white">Customer Management</h3>
+        <button data-id="136" id="add-customer-btn-e3f4" class="btn-amber text-sm">+ Add Customer</button>
+      </div>
+      <div data-id="137" class="flex flex-wrap gap-3 mb-5">
+        <input data-id="138" id="customer-search-g5h6" type="text" class="form-input w-full sm:w-64" placeholder="Search customers…" />
+        <select data-id="139" id="customer-plan-filter-i7j8" class="form-input w-auto text-sm py-2">
+          <option data-id="140" value="all">All Plans</option>
+          <option data-id="141" value="Starter">Starter</option>
+          <option data-id="142" value="Pro">Pro</option>
+          <option data-id="143" value="Enterprise">Enterprise</option>
+        </select>
+      </div>
+      <div data-id="144" class="overflow-x-auto" id="customers-table-k9l0"></div>
+    </div>
+
+    <!-- ==================== ORDERS ==================== -->
+    <div data-id="145" id="page-orders" class="page">
+      <div data-id="146" class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h3 data-id="147" class="text-xl font-display font-bold text-white">Order Management</h3>
+        <button data-id="148" id="new-order-btn-m1n2" class="btn-amber text-sm">+ New Order</button>
+      </div>
+      <div data-id="149" class="flex flex-wrap gap-3 mb-5">
+        <select data-id="150" id="order-status-filter-o3p4" class="form-input w-auto text-sm py-2">
+          <option data-id="151" value="all">All Status</option>
+          <option data-id="152" value="Completed">Completed</option>
+          <option data-id="153" value="Pending">Pending</option>
+          <option data-id="154" value="Refunded">Refunded</option>
+        </select>
+        <input data-id="155" id="order-search-q5r6" type="text" class="form-input w-full sm:w-48" placeholder="Search orders…" />
+      </div>
+      <div data-id="156" class="overflow-x-auto" id="orders-table-s7t8"></div>
+    </div>
+
+    <!-- ==================== PAYMENT HUB ==================== -->
+    <div data-id="157" id="page-payments" class="page">
+      <div data-id="158" class="mb-6">
+        <h3 data-id="159" class="text-xl font-display font-bold text-white">Payment Hub</h3>
+        <p data-id="160" class="text-sm text-gray-400 mt-1">Run payments your way — no processor required. Plug in what you want, when you want.</p>
+      </div>
+      <!-- INTERNAL ENGINE -->
+      <div data-id="161" class="bg-card border-2 border-amber/30 rounded-xl2 p-6 mb-8 relative" style="box-shadow:0 0 30px rgba(245,158,11,0.1);">
+        <div data-id="162" class="flex items-center gap-3 mb-3">
+          <span data-id="163" class="text-2xl">🏦</span>
+          <h4 data-id="164" class="text-lg font-display font-bold text-white">Internal Payment Engine</h4>
+          <span data-id="165" class="badge badge-active ml-2">ACTIVE BY DEFAULT</span>
+          <span data-id="166" class="ml-auto text-gray-500" title="Cannot be disabled">🔒</span>
+        </div>
+        <p data-id="167" class="text-sm text-gray-400 mb-4">Accept and record payments manually. You collect payment however you choose — cash, bank transfer, crypto, in-person, invoice — and record it here. Zero fees. Zero third parties. 100% yours.</p>
+        <div data-id="168" class="flex flex-wrap gap-3 text-xs text-gray-300 mb-4">
+          <span data-id="169">✦ Manual payment recording</span><span data-id="170">✦ Invoice & receipt generation</span><span data-id="171">✦ Any payment method</span><span data-id="172">✦ $0 platform fees</span><span data-id="173">✦ Full data ownership</span>
+        </div>
+        <button data-id="174" id="configure-internal-u9v0" class="btn-outline text-xs">Configure</button>
+      </div>
+      <!-- INTEGRATIONS -->
+      <h4 data-id="175" class="section-title mb-4">Optional Payment Integrations</h4>
+      <div data-id="176" class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        <div data-id="177" class="integration-card">
+          <div data-id="178" class="flex items-center gap-2 mb-3"><span data-id="179" class="text-2xl">💜</span><h5 data-id="180" class="font-display font-bold text-white">Stripe</h5></div>
+          <div data-id="181" class="flex items-center gap-2 mb-3"><span data-id="182" class="text-xs text-gray-500">Status:</span><span data-id="183" id="stripe-status-w1x2" class="badge badge-inactive">Not Connected</span></div>
+          <p data-id="184" class="text-xs text-gray-400 mb-2">Fee: 2.9% + $0.30/transaction</p>
+          <div data-id="185" class="text-xs text-gray-500 mb-4 space-y-1"><p data-id="186">✦ Credit card processing</p><p data-id="187">✦ Subscription billing</p><p data-id="188">✦ Webhook support</p><p data-id="189">✦ Auto-invoicing</p></div>
+          <div data-id="190" class="flex items-center gap-3">
+            <div data-id="191" id="stripe-toggle-y3z4" class="toggle-switch" data-integration="stripe"></div>
+            <button data-id="192" id="stripe-connect-a5b6" class="btn-outline text-xs">Connect</button>
+          </div>
+        </div>
+        <div data-id="193" class="integration-card">
+          <div data-id="194" class="flex items-center gap-2 mb-3"><span data-id="195" class="text-2xl">🔵</span><h5 data-id="196" class="font-display font-bold text-white">PayPal</h5></div>
+          <div data-id="197" class="flex items-center gap-2 mb-3"><span data-id="198" class="text-xs text-gray-500">Status:</span><span data-id="199" id="paypal-status-c7d8" class="badge badge-inactive">Not Connected</span></div>
+          <p data-id="200" class="text-xs text-gray-400 mb-2">Fee: 3.49% + $0.49/transaction</p>
+          <div data-id="201" class="text-xs text-gray-500 mb-4 space-y-1"><p data-id="202">✦ PayPal & card payments</p><p data-id="203">✦ International payments</p><p data-id="204">✦ Buyer protection</p><p data-id="205">✦ Easy setup</p></div>
+          <div data-id="206" class="flex items-center gap-3">
+            <div data-id="207" id="paypal-toggle-e9f0" class="toggle-switch" data-integration="paypal"></div>
+            <button data-id="208" id="paypal-connect-g1h2" class="btn-outline text-xs">Connect</button>
+          </div>
+        </div>
+        <div data-id="209" class="integration-card">
+          <div data-id="210" class="flex items-center gap-2 mb-3"><span data-id="211" class="text-2xl">🟠</span><h5 data-id="212" class="font-display font-bold text-white">Gumroad</h5></div>
+          <div data-id="213" class="flex items-center gap-2 mb-3"><span data-id="214" class="text-xs text-gray-500">Status:</span><span data-id="215" id="gumroad-status-i3j4" class="badge badge-inactive">Not Connected</span></div>
+          <p data-id="216" class="text-xs text-gray-400 mb-2">Fee: 10% per sale</p>
+          <div data-id="217" class="text-xs text-gray-500 mb-4 space-y-1"><p data-id="218">✦ Zero monthly fee</p><p data-id="219">✦ Digital product hosting</p><p data-id="220">✦ Instant setup</p><p data-id="221">✦ Built-in audience</p></div>
+          <div data-id="222" class="flex items-center gap-3">
+            <div data-id="223" id="gumroad-toggle-k5l6" class="toggle-switch" data-integration="gumroad"></div>
+            <button data-id="224" id="gumroad-connect-m7n8" class="btn-outline text-xs">Connect</button>
+          </div>
+        </div>
+      </div>
+      <!-- PAYMENT METHOD PREFS -->
+      <div data-id="225" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+        <h4 data-id="226" class="section-title">Payment Method Preferences</h4>
+        <div data-id="227" class="mb-4">
+          <label data-id="228" class="text-xs text-gray-500 mb-1 block">Default Payment Method</label>
+          <select data-id="229" id="default-payment-method-o9p0" class="form-input w-full sm:w-64">
+            <option data-id="230">Internal Manual</option><option data-id="231">Stripe</option><option data-id="232">PayPal</option><option data-id="233">Gumroad</option><option data-id="234">Cash</option><option data-id="235">Bank Transfer</option><option data-id="236">Crypto</option><option data-id="237">Other</option>
+          </select>
+        </div>
+        <div data-id="238" class="space-y-2" id="payment-methods-list-q1r2">
+          <label data-id="239" class="flex items-center gap-2 text-sm"><input data-id="240" type="checkbox" checked class="accent-amber" value="Internal Manual" /> Internal Manual</label>
+          <label data-id="241" class="flex items-center gap-2 text-sm"><input data-id="242" type="checkbox" class="accent-amber" value="Stripe" /> Stripe</label>
+          <label data-id="243" class="flex items-center gap-2 text-sm"><input data-id="244" type="checkbox" class="accent-amber" value="PayPal" /> PayPal</label>
+          <label data-id="245" class="flex items-center gap-2 text-sm"><input data-id="246" type="checkbox" class="accent-amber" value="Gumroad" /> Gumroad</label>
+          <label data-id="247" class="flex items-center gap-2 text-sm"><input data-id="248" type="checkbox" checked class="accent-amber" value="Cash" /> Cash</label>
+          <label data-id="249" class="flex items-center gap-2 text-sm"><input data-id="250" type="checkbox" checked class="accent-amber" value="Bank Transfer" /> Bank Transfer</label>
+          <label data-id="251" class="flex items-center gap-2 text-sm"><input data-id="252" type="checkbox" class="accent-amber" value="Crypto" /> Crypto</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CREDIT ENGINE ==================== -->
+    <div data-id="253" id="page-credits" class="page">
+      <div data-id="254" class="mb-6">
+        <h3 data-id="255" class="text-xl font-display font-bold text-white">AI Credit Engine</h3>
+        <p data-id="256" class="text-sm text-gray-400 mt-1">Define, issue, and track AI credits across your entire platform.</p>
+      </div>
+      <!-- PLAN ALLOCATIONS -->
+      <div data-id="257" class="bg-card rounded-xl2 p-5 border border-gray-800/50 mb-6">
+        <h4 data-id="258" class="section-title">Plan Credit Allocations</h4>
+        <div data-id="259" class="overflow-x-auto" id="credit-plans-table-s3t4"></div>
+      </div>
+      <!-- CREDIT COSTS -->
+      <div data-id="260" class="bg-card rounded-xl2 p-5 border border-gray-800/50 mb-6">
+        <div data-id="261" class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h4 data-id="262" class="section-title mb-0">Credit Cost Per Action</h4>
+          <button data-id="263" id="add-credit-action-u5v6" class="btn-outline text-xs">+ Add Action</button>
+        </div>
+        <div data-id="264" class="overflow-x-auto" id="credit-actions-table-w7x8"></div>
+      </div>
+      <!-- CREDIT ISSUANCE -->
+      <div data-id="265" class="bg-card rounded-xl2 p-5 border border-gray-800/50 mb-6">
+        <h4 data-id="266" class="section-title">Credit Issuance</h4>
+        <div data-id="267" class="flex flex-wrap gap-3 mb-4">
+          <select data-id="268" id="credit-customer-select-y9z0" class="form-input w-full sm:w-48"></select>
+          <input data-id="269" id="credit-amount-a1b2" type="number" class="form-input w-32" placeholder="+/- amount" />
+          <input data-id="270" id="credit-reason-c3d4" type="text" class="form-input flex-1" placeholder="Reason…" />
+          <button data-id="271" id="apply-credit-e5f6" class="btn-amber text-sm">Apply</button>
+        </div>
+        <div data-id="272" id="credit-history-g7h8" class="space-y-2 max-h-60 overflow-y-auto"></div>
+      </div>
+      <!-- LIVE STATS -->
+      <div data-id="273" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div data-id="274" class="kpi-card"><p data-id="275" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Issued</p><p data-id="276" id="cs-issued-i9j0" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="277" class="kpi-card"><p data-id="278" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Consumed</p><p data-id="279" id="cs-consumed-k1l2" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="280" class="kpi-card"><p data-id="281" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Credits Remaining</p><p data-id="282" id="cs-remaining-m3n4" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="283" class="kpi-card"><p data-id="284" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg Per User</p><p data-id="285" id="cs-avg-o5p6" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+      </div>
+    </div>
+
+    <!-- ==================== LICENSE MANAGER ==================== -->
+    <div data-id="286" id="page-licenses" class="page">
+      <div data-id="287" class="mb-6">
+        <h3 data-id="288" class="text-xl font-display font-bold text-white">License Key Manager</h3>
+        <p data-id="289" class="text-sm text-gray-400 mt-1">Generate, assign, and validate software licenses — no third party needed.</p>
+      </div>
+      <!-- GENERATE -->
+      <div data-id="290" class="bg-card rounded-xl2 p-5 border border-gray-800/50 mb-6">
+        <h4 data-id="291" class="section-title">Generate License Key</h4>
+        <div data-id="292" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div data-id="293"><label data-id="294" class="text-xs text-gray-500 block mb-1">Product</label><select data-id="295" id="lic-product-q7r8" class="form-input w-full"></select></div>
+          <div data-id="296"><label data-id="297" class="text-xs text-gray-500 block mb-1">Customer</label><select data-id="298" id="lic-customer-s9t0" class="form-input w-full"></select></div>
+          <div data-id="299"><label data-id="300" class="text-xs text-gray-500 block mb-1">License Type</label><select data-id="301" id="lic-type-u1v2" class="form-input w-full"><option data-id="302">Perpetual</option><option data-id="303">Subscription</option><option data-id="304">Trial</option><option data-id="305">Site License</option></select></div>
+          <div data-id="306"><label data-id="307" class="text-xs text-gray-500 block mb-1">Max Activations</label><select data-id="308" id="lic-activations-w3x4" class="form-input w-full"><option data-id="309">1</option><option data-id="310">3</option><option data-id="311">5</option><option data-id="312">Unlimited</option></select></div>
+          <div data-id="313"><label data-id="314" class="text-xs text-gray-500 block mb-1">Expiry</label><select data-id="315" id="lic-expiry-y5z6" class="form-input w-full"><option data-id="316">Never</option><option data-id="317">Custom</option></select></div>
+          <div data-id="318"><label data-id="319" class="text-xs text-gray-500 block mb-1">Notes</label><input data-id="320" id="lic-notes-a7b8" type="text" class="form-input w-full" placeholder="Optional notes…" /></div>
+        </div>
+        <button data-id="321" id="generate-license-btn-c9d0" class="btn-amber text-sm">Generate License</button>
+      </div>
+      <!-- LICENSE TABLE -->
+      <div data-id="322" class="bg-card rounded-xl2 p-5 border border-gray-800/50 mb-6">
+        <h4 data-id="323" class="section-title">All Licenses</h4>
+        <div data-id="324" class="overflow-x-auto" id="licenses-table-e1f2"></div>
+      </div>
+      <!-- VALIDATOR -->
+      <div data-id="325" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+        <h4 data-id="326" class="section-title">License Validator</h4>
+        <div data-id="327" class="flex gap-3 mb-4">
+          <input data-id="328" id="validate-key-input-g3h4" type="text" class="form-input flex-1" placeholder="Enter license key (FORG-XXXX-XXXX-XXXX-XXXX)…" />
+          <button data-id="329" id="validate-key-btn-i5j6" class="btn-amber text-sm">Validate</button>
+        </div>
+        <div data-id="330" id="validate-result-k7l8"></div>
+      </div>
+    </div>
+
+    <!-- ==================== ANALYTICS ==================== -->
+    <div data-id="331" id="page-analytics" class="page">
+      <div data-id="332" class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h3 data-id="333" class="text-xl font-display font-bold text-white">Analytics & Reports</h3>
+        <select data-id="334" id="analytics-range-m9n0" class="form-input w-auto text-sm py-2">
+          <option data-id="335">Last 7 Days</option><option data-id="336">Last 30 Days</option><option data-id="337" selected>Last 90 Days</option><option data-id="338">This Year</option>
+        </select>
+      </div>
+      <!-- KPI -->
+      <div data-id="339" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div data-id="340" class="kpi-card"><p data-id="341" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Revenue</p><p data-id="342" id="an-revenue-o1p2" class="text-xl font-display font-bold text-white tabular-nums">$0.00</p></div>
+        <div data-id="343" class="kpi-card"><p data-id="344" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Active Subscriptions</p><p data-id="345" id="an-subs-q3r4" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="346" class="kpi-card"><p data-id="347" class="text-xs text-gray-500 uppercase tracking-wider mb-1">New Customers</p><p data-id="348" id="an-newcust-s5t6" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+        <div data-id="349" class="kpi-card"><p data-id="350" class="text-xs text-gray-500 uppercase tracking-wider mb-1">Credits Consumed</p><p data-id="351" id="an-creditscon-u7v8" class="text-xl font-display font-bold text-white tabular-nums">0</p></div>
+      </div>
+      <!-- CHARTS -->
+      <div data-id="352" class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+        <div data-id="353" class="lg:col-span-3 bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h4 data-id="354" class="section-title">Revenue Over Time</h4>
+          <canvas data-id="355" id="chart-revenue-w9x0" height="220"></canvas>
+        </div>
+        <div data-id="356" class="lg:col-span-2 bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h4 data-id="357" class="section-title">Revenue by Product</h4>
+          <canvas data-id="358" id="chart-product-y1z2" height="220"></canvas>
+        </div>
+      </div>
+      <!-- TABLES & BAR -->
+      <div data-id="359" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div data-id="360" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h4 data-id="361" class="section-title">Best Selling Products</h4>
+          <div data-id="362" class="overflow-x-auto" id="an-bestselling-a3b4"></div>
+        </div>
+        <div data-id="363" class="bg-card rounded-xl2 p-5 border border-gray-800/50">
+          <h4 data-id="364" class="section-title">Customer Plan Distribution</h4>
+          <canvas data-id="365" id="chart-plans-c5d6" height="180"></canvas>
+        </div>
+      </div>
+      <!-- EXPORT -->
+      <div data-id="366" class="flex flex-wrap gap-3">
+        <button data-id="367" id="export-revenue-csv-e7f8" class="btn-outline text-sm">Export Revenue CSV</button>
+        <button data-id="368" id="export-customers-csv-g9h0" class="btn-outline text-sm">Export Customer List</button>
+        <button data-id="369" id="export-orders-csv-i1j2" class="btn-outline text-sm">Export Order History</button>
+      </div>
+    </div>
+
+    <!-- ==================== SETTINGS ==================== -->
+    <div data-id="370" id="page-settings" class="page">
+      <h3 data-id="371" class="text-xl font-display font-bold text-white mb-6">Settings</h3>
+      <div data-id="372" class="flex flex-wrap gap-2 mb-6">
+        <button data-id="373" class="tab-btn active settings-tab" data-settab="general">General</button>
+        <button data-id="374" class="tab-btn settings-tab" data-settab="branding">Branding</button>
+        <button data-id="375" class="tab-btn settings-tab" data-settab="data">Data</button>
+        <button data-id="376" class="tab-btn settings-tab" data-settab="security">Security</button>
+      </div>
+
+      <div data-id="377" id="settings-general" class="settings-pane">
+        <div data-id="378" class="bg-card rounded-xl2 p-5 border border-gray-800/50 space-y-4 max-w-xl">
+          <div data-id="379"><label data-id="380" class="text-xs text-gray-500 block mb-1">Platform Name</label><input data-id="381" id="set-name-k3l4" type="text" class="form-input" value=" ForgeCore Industries" /></div>
+          <div data-id="382"><label data-id="383" class="text-xs text-gray-500 block mb-1">Owner Name</label><input data-id="384" id="set-owner-m5n6" type="text" class="form-input" value=" ForgeCore Industries" /></div>
+          <div data-id="385"><label data-id="386" class="text-xs text-gray-500 block mb-1">Contact Email</label><input data-id="387" id="set-email-o7p8" type="email" class="form-input" value="" /></div>
+          <div data-id="388"><label data-id="389" class="text-xs text-gray-500 block mb-1">Default Currency</label><select data-id="390" id="set-currency-q9r0" class="form-input"><option data-id="391" selected>USD</option><option data-id="392">EUR</option><option data-id="393">GBP</option><option data-id="394">CAD</option></select></div>
+          <div data-id="395"><label data-id="396" class="text-xs text-gray-500 block mb-1">Time Zone</label><select data-id="397" id="set-tz-s1t2" class="form-input"><option data-id="398" selected>America/New_York (EDT)</option><option data-id="399">America/Chicago (CDT)</option><option data-id="400">America/Denver (MDT)</option><option data-id="401">America/Los_Angeles (PDT)</option><option data-id="402">UTC</option></select></div>
+          <div data-id="403"><label data-id="404" class="text-xs text-gray-500 block mb-1">Date Format</label><select data-id="405" id="set-datefmt-u3v4" class="form-input"><option data-id="406" selected>MM/DD/YYYY</option><option data-id="407">DD/MM/YYYY</option><option data-id="408">YYYY-MM-DD</option></select></div>
+          <button data-id="409" id="save-general-btn-w5x6" class="btn-amber text-sm">Save General Settings</button>
+        </div>
+      </div>
+
+      <div data-id="410" id="settings-branding" class="settings-pane" style="display:none;">
+        <div data-id="411" class="bg-card rounded-xl2 p-5 border border-gray-800/50 space-y-4 max-w-xl">
+          <div data-id="412"><label data-id="413" class="text-xs text-gray-500 block mb-1">Primary Color</label><div data-id="414" class="flex gap-2 items-center"><input data-id="415" id="set-color-y7z8" type="color" value="#f59e0b" class="w-10 h-10 rounded border-none cursor-pointer bg-transparent" /><span data-id="416" class="text-sm text-gray-400">#f59e0b</span></div></div>
+          <div data-id="417"><label data-id="418" class="text-xs text-gray-500 block mb-1">Company Name on Receipts</label><input data-id="419" id="set-receipt-name-a9b0" type="text" class="form-input" value=" ForgeCore Industries" /></div>
+          <div data-id="420"><label data-id="421" class="text-xs text-gray-500 block mb-1">Receipt Footer Text</label><input data-id="422" id="set-receipt-footer-c1d2" type="text" class="form-input" value="Thank you for your business!" /></div>
+          <div data-id="423"><label data-id="424" class="text-xs text-gray-500 block mb-1">Invoice Prefix</label><input data-id="425" id="set-inv-prefix-e3f4" type="text" class="form-input" value="ORD-" /></div>
+          <div data-id="426"><label data-id="427" class="text-xs text-gray-500 block mb-1">License Prefix</label><input data-id="428" id="set-lic-prefix-g5h6" type="text" class="form-input" value="GBTECH-" /></div>
+          <button data-id="429" id="save-branding-btn-i7j8" class="btn-amber text-sm">Save Branding</button>
+        </div>
+      </div>
+
+      <div data-id="430" id="settings-data" class="settings-pane" style="display:none;">
+        <div data-id="431" class="bg-card rounded-xl2 p-5 border border-gray-800/50 space-y-4 max-w-xl">
+          <div data-id="432"><p data-id="433" class="text-sm text-gray-400 mb-2">Storage Usage</p><p data-id="434" id="storage-usage-k9l0" class="text-lg font-display text-amber tabular-nums">0 KB</p></div>
+          <div data-id="435" class="flex flex-wrap gap-3">
+            <button data-id="436" id="export-json-btn-m1n2" class="btn-outline text-sm">Export All Data (JSON)</button>
+            <label data-id="437" id="import-json-label-o3p4" class="btn-outline text-sm cursor-pointer">Import Data (JSON)<input data-id="438" id="import-json-input-q5r6" type="file" accept=".json" class="hidden" /></label>
+          </div>
+          <hr data-id="439" class="border-gray-800" />
+          <div data-id="440">
+            <p data-id="441" class="text-sm text-danger mb-2 font-semibold">Danger Zone</p>
+            <button data-id="442" id="clear-data-btn-s7t8" class="btn-danger text-sm">Clear All Data</button>
+          </div>
+        </div>
+      </div>
+
+      <div data-id="443" id="settings-security" class="settings-pane" style="display:none;">
+        <div data-id="444" class="bg-card rounded-xl2 p-5 border border-gray-800/50 space-y-4 max-w-xl">
+          <div data-id="445"><label data-id="446" class="text-xs text-gray-500 block mb-1">Admin PIN (4 digits)</label><input data-id="447" id="set-pin-u9v0" type="password" maxlength="4" class="form-input w-40" placeholder="Set PIN…" /></div>
+          <div data-id="448" class="flex gap-3">
+            <button data-id="449" id="save-pin-btn-w1x2" class="btn-amber text-sm">Save PIN</button>
+            <button data-id="450" id="lock-now-btn-y3z4" class="btn-outline text-sm">Lock Platform Now</button>
+          </div>
+          <div data-id="451"><label data-id="452" class="text-xs text-gray-500 block mb-1">Session Timeout</label><select data-id="453" id="set-timeout-a5b6" class="form-input w-48"><option data-id="454" selected>Never</option><option data-id="455">30 min</option><option data-id="456">1 hour</option><option data-id="457">8 hours</option></select></div>
+          <button data-id="458" id="save-security-btn-c7d8" class="btn-amber text-sm">Save Security Settings</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end pages container -->
+
+  <footer data-id="459" class="border-t border-gray-800/50 px-8 py-6 text-center text-xs text-gray-600">
+    Made and Design by J.L.S. Toccoa Georgia 2026
+  </footer>
+</div><!-- end main content -->
+</div><!-- end layout flex -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+// ═══════════════════════ UTILITY FUNCTIONS ═══════════════════════
+const STORAGE_KEY = 'getbusytech_platform_data';
+const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+function uid(prefix=''){return prefix+Math.random().toString(36).substr(2,6).toUpperCase();}
+function genOrderId(){return 'ORD-'+Math.random().toString(36).substr(2,6).toUpperCase();}
+function genCustomerId(){return 'GBT-'+Math.random().toString(36).substr(2,5).toUpperCase();}
+function genLicenseKey(){const s=()=>{let r='';for(let i=0;i<4;i++)r+='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)];return r;};return 'GBTECH-'+s()+'-'+s()+'-'+s()+'-'+s();}
+function fmtMoney(n){return '$'+Number(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function fmtDate(d){if(!d)return '';const dt=new Date(d);return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();}
+function showToast(msg,type='info'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;$('toast-container-i9j0').appendChild(t);setTimeout(()=>t.remove(),3200);}
+function showModal(html){const m=$('modal-container-k1l2');m.innerHTML='<div class="modal-overlay"><div class="modal-card">'+html+'</div></div>';m.querySelector('.modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});const cb=m.querySelector('[data-close-modal]');if(cb)cb.addEventListener('click',closeModal);}
+function closeModal(){$('modal-container-k1l2').innerHTML='';}
+
+// ═══════════════════════ DATA ═══════════════════════
+const DEFAULT_APPS = [
+  {id:'app1',icon:'🎨',name:'CreatorForge AI',price:29,category:'Content'},
+  {id:'app2',icon:'⚡',name:'PromptForge AI',price:19,category:'AI Tools'},
+  {id:'app3',icon:'👑',name:'InfluenceForge AI',price:39,category:'Growth'},
+  {id:'app4',icon:'💰',name:'QuantumSell AI',price:49,category:'Sales'},
+  {id:'app5',icon:'🚕',name:'Taxi-Cab App',price:99,category:'Transport'},
+  {id:'app6',icon:'🧵',name:'QEP Studios 6.1',price:59,category:'Embroidery'},
+
+  // ⭐ NEW FORGECORE MODULES ⭐
+  {id:'app7',icon:'🔥',name:'ViralForge AI',price:29,category:'Growth'},
+  {id:'app8',icon:'🧵',name:'EmbroideryForge AI',price:39,category:'Embroidery'},
+  {id:'app9',icon:'🎨',name:'OneTap LogoBuilder',price:19,category:'Branding'},
+  {id:'app10',icon:'⚡',name:'CreatorForge OS Edition',price:29,category:'Content'},
+  {id:'app11',icon:'👑',name:'InfluenceForge OS Edition',price:39,category:'Growth'}
+];
+
+const DEFAULT_PACKS = [
+  {id:'pk1',name:'AI Influencer Identity Pack',price:29,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk2',name:'AI Video Creation Pack',price:34,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk3',name:'AI Engagement Booster Pack',price:29,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk4',name:'AI Posting Automation Pack',price:39,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk5',name:'AI Branding & Identity Pack',price:34,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk6',name:'AI Sales & Conversion Pack',price:44,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk7',name:'AI Niche Expansion Pack',price:29,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk8',name:'AI Trend Hunter Pack',price:24,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk9',name:'AI Multi-Platform Expansion Pack',price:34,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk10',name:'AI Influencer Business Pack',price:59,parentApp:'InfluenceForge AI',status:'Active',type:'pack'},
+  {id:'pk11',name:'AI Content Calendar Pack',price:29,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk12',name:'AI Video Script Pack',price:34,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk13',name:'AI Brand Voice Pack',price:29,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk14',name:'AI Blog & SEO Pack',price:39,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk15',name:'AI Social Media Mastery Pack',price:34,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk16',name:'AI Thumbnail & Graphics Pack',price:29,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk17',name:'AI Email Marketing Pack',price:34,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk18',name:'AI Podcast Pack',price:24,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk19',name:'AI Course Creator Pack',price:49,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk20',name:'AI Content Repurposing Pack',price:29,parentApp:'CreatorForge AI',status:'Active',type:'pack'},
+  {id:'pk21',name:'AI Marketing Prompt Pack',price:24,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk22',name:'AI Business Automation Pack',price:39,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk23',name:'AI Image Prompt Pack',price:29,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk24',name:'AI Chatbot Builder Pack',price:34,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk25',name:'AI Developer Prompt Pack',price:34,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk26',name:'AI Sales Prompt Pack',price:29,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk27',name:'AI Research & Analysis Pack',price:34,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk28',name:'AI Creative Writing Pack',price:24,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk29',name:'AI Education Prompt Pack',price:29,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk30',name:'AI Prompt Analytics Pack',price:39,parentApp:'PromptForge AI',status:'Active',type:'pack'},
+  {id:'pk31',name:'AI Cold Outreach Pack',price:34,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk32',name:'AI Funnel Builder Pack',price:49,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk33',name:'AI Product Launch Pack',price:44,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk34',name:'AI Email Sales Pack',price:34,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk35',name:'AI Objection Mastery Pack',price:29,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk36',name:'AI Lead Generation Pack',price:39,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk37',name:'AI Closing Scripts Pack',price:34,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk38',name:'AI Upsell & Cross-Sell Pack',price:29,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk39',name:'AI Proposal Generator Pack',price:39,parentApp:'QuantumSell AI',status:'Active',type:'pack'},
+  {id:'pk40',name:'AI Revenue Analytics Pack',price:44,parentApp:'QuantumSell AI',status:'Active',type:'pack'}
+];
+
+const DEFAULT_CUSTOMERS = [
+  {id:'GBT-SK001',name:'Sarah K.',email:'sarah@example.com',phone:'',plan:'Pro',credits:8340,licenses:3,joinDate:'2026-06-15',status:'Active',notes:'Power user'},
+  {id:'GBT-MT002',name:'Marcus T.',email:'marcus@example.com',phone:'',plan:'Enterprise',credits:-1,licenses:5,joinDate:'2026-05-20',status:'Active',notes:'Enterprise client'},
+  {id:'GBT-PR003',name:'Priya R.',email:'priya@example.com',phone:'',plan:'Starter',credits:650,licenses:1,joinDate:'2026-07-01',status:'Active',notes:''}
+];
+
+const DEFAULT_CREDIT_ACTIONS = [
+  {id:'ca1',action:'Generate AI Prompt',credits:1,app:'PromptForge AI'},
+  {id:'ca2',action:'Write Video Script',credits:15,app:'CreatorForge AI'},
+  {id:'ca3',action:'Generate Blog Post',credits:10,app:'CreatorForge AI'},
+  {id:'ca4',action:'Create Social Caption',credits:3,app:'CreatorForge AI'},
+  {id:'ca5',action:'Build Sales Funnel',credits:25,app:'QuantumSell AI'},
+  {id:'ca6',action:'Objection Handler',credits:5,app:'QuantumSell AI'},
+  {id:'ca7',action:'Influencer Persona',credits:20,app:'InfluenceForge AI'},
+  {id:'ca8',action:'Auto-Post Content',credits:2,app:'InfluenceForge AI'},
+  {id:'ca9',action:'Digitize Embroidery',credits:30,app:'QEP Studios 6.1'},
+  {id:'ca10',action:'GPS Route Dispatch',credits:1,app:'Taxi-Cab App'}
+];
+
+const DEFAULT_PLANS = [
+  {plan:'Starter',credits:1000,price:79,costPerCredit:'$0.079'},
+  {plan:'Pro',credits:10000,price:149,costPerCredit:'$0.0149'},
+  {plan:'Enterprise',credits:-1,price:0,costPerCredit:'N/A'}
+];
+
+let DATA;
+
+function initData(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    try{ DATA = JSON.parse(raw); return false; }catch(e){}
+  }
+  // First run — seed
+  const now = new Date().toISOString();
+  DATA = {
+    apps: JSON.parse(JSON.stringify(DEFAULT_APPS)),
+    packs: JSON.parse(JSON.stringify(DEFAULT_PACKS)),
+    customers: JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS)),
+    orders: [
+      {id:'ORD-A1B2C3',customerId:'GBT-SK001',customerName:'Sarah K.',products:['CreatorForge AI','AI Video Script Pack'],amount:63,discount:0,total:63,paymentMethod:'Internal Manual',status:'Completed',date:'2026-08-10',notes:''},
+      {id:'ORD-D4E5F6',customerId:'GBT-MT002',customerName:'Marcus T.',products:['QuantumSell AI','AI Funnel Builder Pack','AI Lead Generation Pack'],amount:137,discount:10,total:127,paymentMethod:'Bank Transfer',status:'Completed',date:'2026-08-12',notes:'Enterprise discount applied'},
+      {id:'ORD-G7H8I9',customerId:'GBT-PR003',customerName:'Priya R.',products:['PromptForge AI'],amount:19,discount:0,total:19,paymentMethod:'Cash',status:'Pending',date:'2026-08-14',notes:''}
+    ],
+    licenses: [
+      {key:'GBTECH-AK47-BM29-CX03-DL91',customerId:'GBT-SK001',customerName:'Sarah K.',product:'CreatorForge AI',type:'Subscription',activations:'3',maxActivations:'5',status:'Active',expiry:'Never',notes:''},
+      {key:'GBTECH-FG12-HJ34-KL56-MN78',customerId:'GBT-MT002',customerName:'Marcus T.',product:'QuantumSell AI',type:'Perpetual',activations:'2',maxActivations:'Unlimited',status:'Active',expiry:'Never',notes:'Enterprise'},
+      {key:'GBTECH-PQ90-RS12-TU34-VW56',customerId:'GBT-PR003',customerName:'Priya R.',product:'PromptForge AI',type:'Trial',activations:'1',maxActivations:'1',status:'Active',expiry:'2026-09-14',notes:'30-day trial'}
+    ],
+    creditPlans: JSON.parse(JSON.stringify(DEFAULT_PLANS)),
+    creditActions: JSON.parse(JSON.stringify(DEFAULT_CREDIT_ACTIONS)),
+    creditHistory: [],
+    settings: {
+      platformName:' ForgeCore Industries',ownerName:' ForgeCore Industries',email:'',currency:'USD',timezone:'America/New_York (EDT)',dateFormat:'MM/DD/YYYY',
+      primaryColor:'#f59e0b',receiptName:' ForgeCore Industries',receiptFooter:'Thank you for your business!',invoicePrefix:'ORD-',licensePrefix:'GBTECH-',
+      pin:'',sessionTimeout:'Never',
+      integrations:{stripe:{connected:false,keys:{}},paypal:{connected:false,keys:{}},gumroad:{connected:false,keys:{}}}
+    }
+  };
+  saveData();
+  return true;
+}
+
+function saveData(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(DATA));}catch(e){showToast('Storage full!','error');}
+}
+
+// ═══════════════════════ NAVIGATION ═══════════════════════
+const pageNames = {
+  dashboard:{title:'Dashboard',sub:'Welcome back,  ForgeCore Industries'},
+  products:{title:'Products',sub:'Manage your app & pack catalog'},
+  customers:{title:'Customers',sub:'User management'},
+  orders:{title:'Orders',sub:'Order management'},
+  payments:{title:'Payment Hub',sub:'Payment engine & integrations'},
+  credits:{title:'Credit Engine',sub:'AI credit system'},
+  licenses:{title:'License Manager',sub:'Key generation & validation'},
+  analytics:{title:'Analytics',sub:'Charts & reports'},
+  settings:{title:'Settings',sub:'Platform configuration'}
+};
+
+let currentPage = 'dashboard';
+
+function navigateTo(page){
+  currentPage = page;
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  const el = $('page-'+page);
+  if(el) el.classList.add('active');
+  $$('.sidebar-link').forEach(l=>{l.classList.toggle('active',l.dataset.page===page);});
+  const info = pageNames[page]||{title:page,sub:''};
+  $('page-title-u1v2').textContent = info.title;
+  $('page-subtitle-w3x4').textContent = info.sub;
+  // close mobile sidebar
+  $('sidebar-m3n4').classList.remove('mobile-open');
+  $('sidebar-overlay-s9t0').classList.add('hidden');
+  // render page
+  renderPage(page);
+}
+
+$$('.sidebar-link').forEach(link=>{
+  link.addEventListener('click',()=>navigateTo(link.dataset.page));
+});
+
+// Mobile menu
+$('mobile-menu-btn-q7r8').addEventListener('click',()=>{
+  $('sidebar-m3n4').classList.add('mobile-open');
+  $('sidebar-overlay-s9t0').classList.remove('hidden');
+});
+$('sidebar-overlay-s9t0').addEventListener('click',()=>{
+  $('sidebar-m3n4').classList.remove('mobile-open');
+  $('sidebar-overlay-s9t0').classList.add('hidden');
+});
+
+// Quick actions
+$$('.quick-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const a = card.dataset.action;
+    if(a==='new-order'){navigateTo('orders');setTimeout(()=>openNewOrderModal(),100);}
+    else if(a==='add-customer'){navigateTo('customers');setTimeout(()=>openAddCustomerModal(),100);}
+    else if(a==='gen-license'){navigateTo('licenses');}
+    else if(a==='export-data'){exportJSON();}
+  });
+});
+
+// ═══════════════════════ RENDER DISPATCHER ═══════════════════════
+function renderPage(page){
+  switch(page){
+    case 'dashboard': renderDashboard(); break;
+    case 'products': renderProducts(); break;
+    case 'customers': renderCustomers(); break;
+    case 'orders': renderOrders(); break;
+    case 'payments': renderPayments(); break;
+    case 'credits': renderCredits(); break;
+    case 'licenses': renderLicenses(); break;
+    case 'analytics': renderAnalytics(); break;
+    case 'settings': renderSettings(); break;
+  }
+}
+
+// ═══════════════════════ DASHBOARD ═══════════════════════
+function renderDashboard(){
+  const totalRev = DATA.orders.filter(o=>o.status==='Completed').reduce((s,o)=>s+o.total,0);
+  const activeCust = DATA.customers.filter(c=>c.status==='Active').length;
+  const totalCredits = DATA.customers.reduce((s,c)=>s+(c.credits===-1?0:c.credits),0);
+  const activeLic = DATA.licenses.filter(l=>l.status==='Active').length;
+  $('kpi-revenue-i1j2').textContent = fmtMoney(totalRev);
+  $('kpi-customers-k3l4').textContent = activeCust;
+  $('kpi-credits-m5n6').textContent = totalCredits.toLocaleString();
+  $('kpi-licenses-o7p8').textContent = activeLic;
+  // Recent orders
+  const ro = $('dash-recent-orders-q9r0');
+  const recent = DATA.orders.slice(-5).reverse();
+  if(recent.length===0){
+    ro.innerHTML='<div class="empty-state"><p>📋</p><p>No orders yet. <span class="text-amber cursor-pointer" id="dash-add-order-link">Add your first order →</span></p></div>';
+    const link = $('dash-add-order-link');
+    if(link) link.addEventListener('click',()=>{navigateTo('orders');setTimeout(()=>openNewOrderModal(),100);});
+  } else {
+    let h='<table class="data-table"><thead><tr><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+    recent.forEach(o=>{
+      const badge = o.status==='Completed'?'badge-success':o.status==='Pending'?'badge-pending':'badge-refunded';
+      h+='<tr><td>'+o.customerName+'</td><td class="max-w-[120px] truncate">'+o.products[0]+(o.products.length>1?' +':'')+'</td><td class="tabular-nums">'+fmtMoney(o.total)+'</td><td><span class="badge '+badge+'">'+o.status+'</span></td><td>'+fmtDate(o.date)+'</td></tr>';
+    });
+    h+='</tbody></table>';
+    ro.innerHTML=h;
+  }
+  // Top products
+  const tp = $('dash-top-products-s1t2');
+  const prodRev = {};
+  DATA.orders.filter(o=>o.status==='Completed').forEach(o=>{
+    o.products.forEach(p=>{prodRev[p]=(prodRev[p]||0)+o.total/o.products.length;});
+  });
+  const sorted = Object.entries(prodRev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(sorted.length===0){
+    tp.innerHTML='<div class="empty-state"><p>📊</p><p>No sales data yet.</p></div>';
+  } else {
+    const maxVal = sorted[0][1];
+    let h='<div class="space-y-3">';
+    sorted.forEach(([name,val])=>{
+      const pct = Math.round((val/maxVal)*100);
+      h+='<div><div class="flex justify-between text-xs mb-1"><span class="text-gray-300">'+name+'</span><span class="text-amber tabular-nums">'+fmtMoney(val)+'</span></div><div class="w-full bg-gray-800 rounded-full h-2"><div class="bg-amber rounded-full h-2" style="width:'+pct+'%"></div></div></div>';
+    });
+    h+='</div>';
+    tp.innerHTML=h;
+  }
+}
+
+// ═══════════════════════ PRODUCTS ═══════════════════════
+function renderProducts(){
+  renderAppsTable();
+  renderPacksTable();
+  // populate filter
+  const sel = $('pack-filter-a9b0');
+  const cur = sel.value;
+  sel.innerHTML='<option value="all">All Apps</option>';
+  DATA.apps.forEach(a=>{sel.innerHTML+='<option value="'+a.name+'">'+a.name+'</option>';});
+  sel.value = cur||'all';
+  $('apps-count-w5x6').textContent = DATA.apps.length;
+  $('packs-count-y7z8').textContent = DATA.packs.length;
+}
+
+function renderAppsTable(){
+  let h='<table class="data-table"><thead><tr><th></th><th>Name</th><th>Price/mo</th><th>Status</th><th>Category</th><th>Actions</th></tr></thead><tbody>';
+  DATA.apps.forEach(a=>{
+    const active = a.status==='Active';
+    h+='<tr><td class="text-2xl">'+a.icon+'</td><td class="font-medium text-white">'+a.name+'</td><td class="tabular-nums">$'+a.price+'/mo</td>';
+    h+='<td><div class="toggle-switch '+(active?'active':'')+'" data-toggle-app="'+a.id+'"></div></td>';
+    h+='<td><span class="badge badge-active">'+a.category+'</span></td>';
+    h+='<td><button class="text-amber text-xs hover:underline mr-2" data-edit-app="'+a.id+'">Edit</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  $('products-apps-tab').innerHTML=h;
+  // Bind toggles
+  $$('[data-toggle-app]').forEach(t=>{
+    t.addEventListener('click',()=>{
+      const app = DATA.apps.find(a=>a.id===t.dataset.toggleApp);
+      if(app){app.status=app.status==='Active'?'Inactive':'Active';saveData();renderProducts();}
+    });
+  });
+  $$('[data-edit-app]').forEach(b=>{
+    b.addEventListener('click',()=>openEditAppModal(b.dataset.editApp));
+  });
+}
+
+function renderPacksTable(){
+  const filter = $('pack-filter-a9b0').value;
+  const packs = filter==='all'?DATA.packs:DATA.packs.filter(p=>p.parentApp===filter);
+  let h='<table class="data-table"><thead><tr><th>Name</th><th>Price</th><th>Parent App</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  packs.forEach(p=>{
+    const active = p.status==='Active';
+    h+='<tr><td class="font-medium text-white">'+p.name+'</td><td class="tabular-nums">$'+p.price+'</td>';
+    h+='<td><span class="badge badge-active text-[10px]">'+p.parentApp+'</span></td>';
+    h+='<td><div class="toggle-switch '+(active?'active':'')+'" data-toggle-pack="'+p.id+'"></div></td>';
+    h+='<td><button class="text-amber text-xs hover:underline" data-edit-pack="'+p.id+'">Edit</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  $('packs-table-container-c1d2').innerHTML=h;
+  $$('[data-toggle-pack]').forEach(t=>{
+    t.addEventListener('click',()=>{
+      const pk = DATA.packs.find(p=>p.id===t.dataset.togglePack);
+      if(pk){pk.status=pk.status==='Active'?'Inactive':'Active';saveData();renderProducts();}
+    });
+  });
+  $$('[data-edit-pack]').forEach(b=>{
+    b.addEventListener('click',()=>openEditPackModal(b.dataset.editPack));
+  });
+}
+
+function openEditAppModal(appId){
+  const app = DATA.apps.find(a=>a.id===appId);if(!app)return;
+  showModal('<h3 class="text-lg font-display text-white mb-4">Edit App</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Name</label><input class="form-input" id="ea-name" value="'+app.name+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Price ($/mo)</label><input class="form-input" type="number" id="ea-price" value="'+app.price+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Category</label><input class="form-input" id="ea-cat" value="'+app.category+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Status</label><select class="form-input" id="ea-status"><option'+(app.status==='Active'?' selected':'')+'>Active</option><option'+(app.status==='Inactive'?' selected':'')+'>Inactive</option></select></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="ea-save">Save Changes</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  $('ea-save').addEventListener('click',()=>{
+    app.name=$('ea-name').value;app.price=Number($('ea-price').value);app.priceLabel='$'+app.price+'/mo';app.category=$('ea-cat').value;app.status=$('ea-status').value;
+    saveData();closeModal();renderProducts();showToast('App updated','success');
+  });
+}
+
+function openEditPackModal(packId){
+  const pk = DATA.packs.find(p=>p.id===packId);if(!pk)return;
+  showModal('<h3 class="text-lg font-display text-white mb-4">Edit Pack</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Name</label><input class="form-input" id="ep-name" value="'+pk.name+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Price ($)</label><input class="form-input" type="number" id="ep-price" value="'+pk.price+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Parent App</label><select class="form-input" id="ep-parent">'+DATA.apps.map(a=>'<option'+(a.name===pk.parentApp?' selected':'')+'>'+a.name+'</option>').join('')+'</select></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="ep-save">Save</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  $('ep-save').addEventListener('click',()=>{
+    pk.name=$('ep-name').value;pk.price=Number($('ep-price').value);pk.parentApp=$('ep-parent').value;
+    saveData();closeModal();renderProducts();showToast('Pack updated','success');
+  });
+}
+
+// Product tabs
+$$('.prod-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    $$('.prod-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const which = tab.dataset.prodtab;
+    $('products-apps-tab').style.display = which==='apps'?'':'none';
+    $('products-packs-tab').style.display = which==='packs'?'':'none';
+  });
+});
+$('pack-filter-a9b0').addEventListener('change',renderPacksTable);
+
+$('add-product-btn-u3v4').addEventListener('click',()=>{
+  showModal('<h3 class="text-lg font-display text-white mb-4">Add Product</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Type</label><select class="form-input" id="np-type"><option>App</option><option>Pack</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Name</label><input class="form-input" id="np-name" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Price ($)</label><input class="form-input" type="number" id="np-price" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Category / Parent App</label><input class="form-input" id="np-cat" placeholder="Category for apps, parent app name for packs" /></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="np-save">Add Product</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  $('np-save').addEventListener('click',()=>{
+    const type=$('np-type').value,name=$('np-name').value,price=Number($('np-price').value),cat=$('np-cat').value;
+    if(!name){showToast('Name required','error');return;}
+    if(type==='App'){
+      DATA.apps.push({id:uid('app'),icon:'📱',name,price,priceLabel:'$'+price+'/mo',category:cat||'General',status:'Active',type:'app'});
+    } else {
+      DATA.packs.push({id:uid('pk'),name,price,parentApp:cat||'General',status:'Active',type:'pack'});
+    }
+    saveData();closeModal();renderProducts();showToast('Product added','success');
+  });
+});
+
+// ═══════════════════════ CUSTOMERS ═══════════════════════
+function renderCustomers(){
+  const search = ($('customer-search-g5h6').value||'').toLowerCase();
+  const planF = $('customer-plan-filter-i7j8').value;
+  let filtered = DATA.customers;
+  if(search) filtered = filtered.filter(c=>c.name.toLowerCase().includes(search)||c.email.toLowerCase().includes(search));
+  if(planF!=='all') filtered = filtered.filter(c=>c.plan===planF);
+  const ct = $('customers-table-k9l0');
+  if(filtered.length===0){
+    ct.innerHTML='<div class="empty-state"><p>👥</p><p>No customers found.</p></div>';return;
+  }
+  let h='<table class="data-table"><thead><tr><th></th><th>Name</th><th>Email</th><th>Plan</th><th>Credits</th><th>Licenses</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  filtered.forEach(c=>{
+    const initials = c.name.split(' ').map(w=>w[0]).join('').toUpperCase();
+    const credits = c.credits===-1?'Unlimited':c.credits.toLocaleString();
+    const licCount = DATA.licenses.filter(l=>l.customerId===c.id&&l.status==='Active').length;
+    h+='<tr><td><div class="w-8 h-8 rounded-full bg-amber/20 text-amber flex items-center justify-center text-xs font-bold">'+initials+'</div></td>';
+    h+='<td class="text-white font-medium">'+c.name+'</td><td>'+c.email+'</td>';
+    h+='<td><span class="badge badge-active">'+c.plan+'</span></td>';
+    h+='<td class="tabular-nums">'+credits+'</td><td class="tabular-nums">'+licCount+'</td>';
+    h+='<td>'+fmtDate(c.joinDate)+'</td>';
+    h+='<td><span class="badge '+(c.status==='Active'?'badge-active':'badge-inactive')+'">'+c.status+'</span></td>';
+    h+='<td class="flex gap-2"><button class="text-amber text-xs hover:underline" data-edit-cust="'+c.id+'">Edit</button><button class="text-danger text-xs hover:underline" data-del-cust="'+c.id+'">Delete</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  ct.innerHTML=h;
+  $$('[data-edit-cust]').forEach(b=>b.addEventListener('click',()=>openEditCustomerModal(b.dataset.editCust)));
+  $$('[data-del-cust]').forEach(b=>b.addEventListener('click',()=>{
+    DATA.customers=DATA.customers.filter(c=>c.id!==b.dataset.delCust);saveData();renderCustomers();showToast('Customer deleted','success');
+  }));
+}
+
+function openAddCustomerModal(){
+  showModal('<h3 class="text-lg font-display text-white mb-4">Add Customer</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Name</label><input class="form-input" id="ac-name" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Email</label><input class="form-input" type="email" id="ac-email" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Phone</label><input class="form-input" id="ac-phone" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Plan</label><select class="form-input" id="ac-plan"><option>Starter</option><option>Pro</option><option>Enterprise</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Notes</label><textarea class="form-input" id="ac-notes" rows="2"></textarea></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="ac-save">Save Customer</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  $('ac-save').addEventListener('click',()=>{
+    const name=$('ac-name').value,email=$('ac-email').value;
+    if(!name||!email){showToast('Name and email required','error');return;}
+    const plan=$('ac-plan').value;
+    const credits=plan==='Starter'?1000:plan==='Pro'?10000:-1;
+    DATA.customers.push({id:genCustomerId(),name,email,phone:$('ac-phone').value,plan,credits,licenses:0,joinDate:new Date().toISOString().split('T')[0],status:'Active',notes:$('ac-notes').value});
+    saveData();closeModal();renderCustomers();showToast('Customer added — ID: '+DATA.customers[DATA.customers.length-1].id,'success');
+  });
+}
+
+function openEditCustomerModal(custId){
+  const c=DATA.customers.find(x=>x.id===custId);if(!c)return;
+  showModal('<h3 class="text-lg font-display text-white mb-4">Edit Customer — '+c.id+'</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Name</label><input class="form-input" id="ec-name" value="'+c.name+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Email</label><input class="form-input" id="ec-email" value="'+c.email+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Phone</label><input class="form-input" id="ec-phone" value="'+(c.phone||'')+'" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Plan</label><select class="form-input" id="ec-plan"><option'+(c.plan==='Starter'?' selected':'')+'>Starter</option><option'+(c.plan==='Pro'?' selected':'')+'>Pro</option><option'+(c.plan==='Enterprise'?' selected':'')+'>Enterprise</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Credits '+(c.credits===-1?'(Unlimited)':'('+c.credits+')')+'</label><div class="flex gap-2"><button class="btn-outline text-xs" id="ec-credit-minus">-100</button><input class="form-input w-28" type="number" id="ec-credits" value="'+(c.credits===-1?0:c.credits)+'" /><button class="btn-outline text-xs" id="ec-credit-plus">+100</button></div></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Status</label><select class="form-input" id="ec-status"><option'+(c.status==='Active'?' selected':'')+'>Active</option><option'+(c.status==='Inactive'?' selected':'')+'>Inactive</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Notes</label><textarea class="form-input" id="ec-notes" rows="2">'+c.notes+'</textarea></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="ec-save">Save Changes</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  $('ec-credit-plus').addEventListener('click',()=>{$('ec-credits').value=Number($('ec-credits').value)+100;});
+  $('ec-credit-minus').addEventListener('click',()=>{$('ec-credits').value=Math.max(0,Number($('ec-credits').value)-100);});
+  $('ec-save').addEventListener('click',()=>{
+    c.name=$('ec-name').value;c.email=$('ec-email').value;c.phone=$('ec-phone').value;
+    c.plan=$('ec-plan').value;c.status=$('ec-status').value;c.notes=$('ec-notes').value;
+    c.credits=c.plan==='Enterprise'?-1:Number($('ec-credits').value);
+    saveData();closeModal();renderCustomers();showToast('Customer updated','success');
+  });
+}
+
+$('add-customer-btn-e3f4').addEventListener('click',openAddCustomerModal);
+$('customer-search-g5h6').addEventListener('input',renderCustomers);
+$('customer-plan-filter-i7j8').addEventListener('change',renderCustomers);
+
+// ═══════════════════════ ORDERS ═══════════════════════
+function renderOrders(){
+  const statusF = $('order-status-filter-o3p4').value;
+  const search = ($('order-search-q5r6').value||'').toLowerCase();
+  let filtered = DATA.orders;
+  if(statusF!=='all') filtered=filtered.filter(o=>o.status===statusF);
+  if(search) filtered=filtered.filter(o=>o.id.toLowerCase().includes(search)||o.customerName.toLowerCase().includes(search));
+  const ct = $('orders-table-s7t8');
+  if(filtered.length===0){
+    ct.innerHTML='<div class="empty-state"><p>🧾</p><p>No orders found.</p></div>';return;
+  }
+  let h='<table class="data-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Product(s)</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+  filtered.slice().reverse().forEach(o=>{
+    const badge = o.status==='Completed'?'badge-success':o.status==='Pending'?'badge-pending':'badge-refunded';
+    h+='<tr><td class="text-amber font-mono text-xs">'+o.id+'</td><td class="text-white">'+o.customerName+'</td>';
+    h+='<td class="max-w-[150px] truncate text-xs">'+o.products.join(', ')+'</td>';
+    h+='<td class="tabular-nums">'+fmtMoney(o.total)+'</td><td class="text-xs">'+o.paymentMethod+'</td>';
+    h+='<td><span class="badge '+badge+'">'+o.status+'</span></td><td>'+fmtDate(o.date)+'</td>';
+    h+='<td class="flex gap-1 flex-wrap"><button class="text-amber text-xs hover:underline" data-receipt-order="'+o.id+'">Receipt</button>';
+    if(o.status!=='Refunded') h+='<button class="text-danger text-xs hover:underline" data-refund-order="'+o.id+'">Refund</button>';
+    h+='<button class="text-gray-500 text-xs hover:underline" data-del-order="'+o.id+'">Del</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  ct.innerHTML=h;
+  $$('[data-receipt-order]').forEach(b=>b.addEventListener('click',()=>showReceipt(b.dataset.receiptOrder)));
+  $$('[data-refund-order]').forEach(b=>b.addEventListener('click',()=>{
+    const o=DATA.orders.find(x=>x.id===b.dataset.refundOrder);
+    if(o){o.status='Refunded';saveData();renderOrders();showToast('Order refunded','info');}
+  }));
+  $$('[data-del-order]').forEach(b=>b.addEventListener('click',()=>{
+    DATA.orders=DATA.orders.filter(o=>o.id!==b.dataset.delOrder);saveData();renderOrders();showToast('Order deleted','success');
+  }));
+}
+
+function showReceipt(orderId){
+  const o=DATA.orders.find(x=>x.id===orderId);if(!o)return;
+  const s = DATA.settings;
+  showModal('<div class="text-center mb-6"><div class="w-12 h-12 rounded-lg bg-amber flex items-center justify-center mx-auto mb-2"><span class="text-xl font-bold text-black">GT</span></div><h3 class="text-lg font-display text-white">'+(s.receiptName||' ForgeCore Industries')+'</h3><p class="text-xs text-gray-500">RECEIPT / INVOICE</p></div>'+
+    '<div class="border border-gray-800 rounded-lg p-4 mb-4 text-sm space-y-2">'+
+    '<div class="flex justify-between"><span class="text-gray-500">Order ID</span><span class="text-white font-mono">'+o.id+'</span></div>'+
+    '<div class="flex justify-between"><span class="text-gray-500">Date</span><span>'+fmtDate(o.date)+'</span></div>'+
+    '<div class="flex justify-between"><span class="text-gray-500">Customer</span><span class="text-white">'+o.customerName+'</span></div>'+
+    '<div class="flex justify-between"><span class="text-gray-500">Payment</span><span>'+o.paymentMethod+'</span></div>'+
+    '<div class="flex justify-between"><span class="text-gray-500">Status</span><span class="text-amber">'+o.status+'</span></div>'+
+    '<hr class="border-gray-800"/>'+
+    o.products.map(p=>'<div class="flex justify-between"><span>'+p+'</span></div>').join('')+
+    '<hr class="border-gray-800"/>'+
+    '<div class="flex justify-between"><span class="text-gray-500">Subtotal</span><span class="tabular-nums">'+fmtMoney(o.amount)+'</span></div>'+
+    (o.discount?'<div class="flex justify-between"><span class="text-gray-500">Discount</span><span class="text-success tabular-nums">-'+fmtMoney(o.discount)+'</span></div>':'')+
+    '<div class="flex justify-between font-bold text-white"><span>TOTAL</span><span class="text-amber tabular-nums">'+fmtMoney(o.total)+'</span></div>'+
+    '</div>'+
+    '<p class="text-center text-xs text-gray-500">'+(s.receiptFooter||'Thank you for your business!')+'</p>'+
+    '<div class="text-center mt-4"><button class="btn-outline text-xs" data-close-modal>Close</button></div>');
+}
+
+function openNewOrderModal(){
+  const allProducts = [...DATA.apps.map(a=>({name:a.name,price:a.price})),...DATA.packs.map(p=>({name:p.name,price:p.price}))];
+  let prodChecks = allProducts.map((p,i)=>'<label class="flex items-center gap-2 text-xs"><input type="checkbox" class="accent-amber order-prod-check" data-idx="'+i+'" data-price="'+p.price+'" value="'+p.name.replace(/"/g,'&quot;')+'" />'+p.name+' <span class="text-amber tabular-nums">$'+p.price+'</span></label>').join('');
+  let custOpts = DATA.customers.map(c=>'<option value="'+c.id+'">'+c.name+' ('+c.email+')</option>').join('');
+  showModal('<h3 class="text-lg font-display text-white mb-4">New Order</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Customer</label><select class="form-input" id="no-cust"><option value="">Select customer…</option>'+custOpts+'</select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Products</label><div class="max-h-40 overflow-y-auto bg-[#1a1a1a] rounded-lg p-3 space-y-1">'+prodChecks+'</div></div>'+
+    '<div class="grid grid-cols-2 gap-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Subtotal</label><input class="form-input" id="no-subtotal" readonly value="$0.00" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Discount ($)</label><input class="form-input" type="number" id="no-discount" value="0" /></div>'+
+    '</div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Total</label><input class="form-input text-amber font-bold" id="no-total" readonly value="$0.00" /></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Payment Method</label><select class="form-input" id="no-method"><option>Internal Manual</option><option>Stripe</option><option>PayPal</option><option>Gumroad</option><option>Cash</option><option>Bank Transfer</option><option>Crypto</option><option>Other</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Payment Status</label><select class="form-input" id="no-pstatus"><option>Completed</option><option>Pending</option><option>Failed</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Notes</label><textarea class="form-input" id="no-notes" rows="2"></textarea></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="no-save">Create Order</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>'+
+    '</div>');
+  function calcTotal(){
+    let sub=0;
+    $$('.order-prod-check').forEach(cb=>{if(cb.checked)sub+=Number(cb.dataset.price);});
+    const disc=Number($('no-discount').value)||0;
+    $('no-subtotal').value=fmtMoney(sub);
+    $('no-total').value=fmtMoney(Math.max(0,sub-disc));
+  }
+  $$('.order-prod-check').forEach(cb=>cb.addEventListener('change',calcTotal));
+  $('no-discount').addEventListener('input',calcTotal);
+  $('no-save').addEventListener('click',()=>{
+    const custId=$('no-cust').value;
+    if(!custId){showToast('Select a customer','error');return;}
+    const cust=DATA.customers.find(c=>c.id===custId);
+    const prods=[];$$('.order-prod-check').forEach(cb=>{if(cb.checked)prods.push(cb.value);});
+    if(prods.length===0){showToast('Select at least one product','error');return;}
+    let sub=0;$$('.order-prod-check').forEach(cb=>{if(cb.checked)sub+=Number(cb.dataset.price);});
+    const disc=Number($('no-discount').value)||0;
+    const total=Math.max(0,sub-disc);
+    const status=$('no-pstatus').value==='Failed'?'Pending':($('no-pstatus').value==='Completed'?'Completed':'Pending');
+    DATA.orders.push({id:genOrderId(),customerId:custId,customerName:cust?cust.name:'Unknown',products:prods,amount:sub,discount:disc,total,paymentMethod:$('no-method').value,status,date:new Date().toISOString().split('T')[0],notes:$('no-notes').value});
+    saveData();closeModal();renderOrders();showToast('Order created!','success');
+  });
+}
+
+$('new-order-btn-m1n2').addEventListener('click',openNewOrderModal);
+$('order-status-filter-o3p4').addEventListener('change',renderOrders);
+$('order-search-q5r6').addEventListener('input',renderOrders);
+
+// ═══════════════════════ PAYMENTS ═══════════════════════
+function renderPayments(){
+  // Integration statuses
+  ['stripe','paypal','gumroad'].forEach(name=>{
+    const connected = DATA.settings.integrations[name].connected;
+    const statusEl = $(name+'-status-'+(name==='stripe'?'w1x2':name==='paypal'?'c7d8':'i3j4'));
+    const toggleEl = $(name+'-toggle-'+(name==='stripe'?'y3z4':name==='paypal'?'e9f0':'k5l6'));
+    if(statusEl){statusEl.textContent=connected?'Connected':'Not Connected';statusEl.className='badge '+(connected?'badge-active':'badge-inactive');}
+    if(toggleEl){toggleEl.classList.toggle('active',connected);}
+  });
+}
+
+// Integration toggles
+['stripe','paypal','gumroad'].forEach(name=>{
+  const toggleId = name+'-toggle-'+(name==='stripe'?'y3z4':name==='paypal'?'e9f0':'k5l6');
+  const connectId = name+'-connect-'+(name==='stripe'?'a5b6':name==='paypal'?'g1h2':'m7n8');
+  $(toggleId).addEventListener('click',()=>{
+    DATA.settings.integrations[name].connected=!DATA.settings.integrations[name].connected;
+    saveData();renderPayments();showToast(name+' '+(DATA.settings.integrations[name].connected?'enabled':'disabled'),'info');
+  });
+  $(connectId).addEventListener('click',()=>{
+    let fields='';
+    if(name==='stripe') fields='<div><label class="text-xs text-gray-500 block mb-1">Publishable Key</label><input class="form-input" id="int-k1" /></div><div><label class="text-xs text-gray-500 block mb-1">Secret Key</label><input class="form-input" id="int-k2" /></div><div><label class="text-xs text-gray-500 block mb-1">Webhook Secret</label><input class="form-input" id="int-k3" /></div>';
+    else if(name==='paypal') fields='<div><label class="text-xs text-gray-500 block mb-1">Client ID</label><input class="form-input" id="int-k1" /></div><div><label class="text-xs text-gray-500 block mb-1">Secret</label><input class="form-input" id="int-k2" /></div><div><label class="text-xs text-gray-500 block mb-1">Mode</label><select class="form-input" id="int-k3"><option>Sandbox</option><option>Live</option></select></div>';
+    else fields='<div><label class="text-xs text-gray-500 block mb-1">Access Token</label><input class="form-input" id="int-k1" /></div><div><label class="text-xs text-gray-500 block mb-1">Store URL</label><input class="form-input" id="int-k2" /></div>';
+    showModal('<h3 class="text-lg font-display text-white mb-4">Connect '+name.charAt(0).toUpperCase()+name.slice(1)+'</h3><div class="space-y-3">'+fields+'<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="int-save">Save & Connect</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div></div>');
+    $('int-save').addEventListener('click',()=>{
+      DATA.settings.integrations[name].connected=true;
+      DATA.settings.integrations[name].keys={k1:$('int-k1')?$('int-k1').value:'',k2:$('int-k2')?$('int-k2').value:'',k3:$('int-k3')?$('int-k3').value:''};
+      saveData();closeModal();renderPayments();showToast(name+' connected!','success');
+    });
+  });
+});
+
+$('configure-internal-u9v0').addEventListener('click',()=>{
+  showModal('<h3 class="text-lg font-display text-white mb-4">Internal Payment Engine — Config</h3>'+
+    '<div class="space-y-3">'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Default Currency</label><select class="form-input" id="ipe-currency"><option selected>USD</option><option>EUR</option><option>GBP</option></select></div>'+
+    '<div><label class="text-xs text-gray-500 block mb-1">Payment Terms</label><input class="form-input" id="ipe-terms" value="Due on receipt" /></div>'+
+    '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="ipe-save">Save</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div></div>');
+  $('ipe-save').addEventListener('click',()=>{closeModal();showToast('Internal engine configured','success');});
+});
+
+// ═══════════════════════ CREDITS ═══════════════════════
+function renderCredits(){
+  // Plans table
+  let h='<table class="data-table"><thead><tr><th>Plan</th><th>Monthly Credits</th><th>Price</th><th>Cost/Credit</th><th>Actions</th></tr></thead><tbody>';
+  DATA.creditPlans.forEach((p,i)=>{
+    h+='<tr><td class="text-white font-medium">'+p.plan+'</td><td class="tabular-nums">'+(p.credits===-1?'Unlimited':p.credits.toLocaleString())+'</td><td class="tabular-nums">'+(p.price===0?'Custom':'$'+p.price)+'</td><td class="tabular-nums">'+p.costPerCredit+'</td>';
+    h+='<td><button class="text-amber text-xs hover:underline" data-edit-plan="'+i+'">Edit</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  $('credit-plans-table-s3t4').innerHTML=h;
+  $$('[data-edit-plan]').forEach(b=>b.addEventListener('click',()=>{
+    const idx=Number(b.dataset.editPlan);const p=DATA.creditPlans[idx];
+    showModal('<h3 class="text-lg font-display text-white mb-4">Edit Plan — '+p.plan+'</h3>'+
+      '<div class="space-y-3"><div><label class="text-xs text-gray-500 block mb-1">Credits</label><input class="form-input" type="number" id="epl-credits" value="'+(p.credits===-1?0:p.credits)+'" /></div>'+
+      '<div><label class="text-xs text-gray-500 block mb-1">Price ($)</label><input class="form-input" type="number" id="epl-price" value="'+p.price+'" /></div>'+
+      '<div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="epl-save">Save</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div></div>');
+    $('epl-save').addEventListener('click',()=>{
+      p.credits=p.plan==='Enterprise'?-1:Number($('epl-credits').value);
+      p.price=Number($('epl-price').value);
+      p.costPerCredit=p.credits>0?'$'+(p.price/p.credits).toFixed(4):'N/A';
+      saveData();closeModal();renderCredits();showToast('Plan updated','success');
+    });
+  }));
+
+  // Actions table
+  let h2='<table class="data-table"><thead><tr><th>Action</th><th>Credits</th><th>App</th><th>Actions</th></tr></thead><tbody>';
+  DATA.creditActions.forEach((a,i)=>{
+    h2+='<tr><td class="text-white">'+a.action+'</td><td class="tabular-nums">'+a.credits+'</td><td><span class="badge badge-active text-[10px]">'+a.app+'</span></td>';
+    h2+='<td><button class="text-amber text-xs hover:underline" data-edit-ca="'+i+'">Edit</button></td></tr>';
+  });
+  h2+='</tbody></table>';
+  $('credit-actions-table-w7x8').innerHTML=h2;
+  $$('[data-edit-ca]').forEach(b=>b.addEventListener('click',()=>{
+    const idx=Number(b.dataset.editCa);const a=DATA.creditActions[idx];
+    showModal('<h3 class="text-lg font-display text-white mb-4">Edit Credit Action</h3><div class="space-y-3"><div><label class="text-xs text-gray-500 block mb-1">Action</label><input class="form-input" id="eca-action" value="'+a.action+'" /></div><div><label class="text-xs text-gray-500 block mb-1">Credits</label><input class="form-input" type="number" id="eca-credits" value="'+a.credits+'" /></div><div><label class="text-xs text-gray-500 block mb-1">App</label><input class="form-input" id="eca-app" value="'+a.app+'" /></div><div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="eca-save">Save</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div></div>');
+    $('eca-save').addEventListener('click',()=>{a.action=$('eca-action').value;a.credits=Number($('eca-credits').value);a.app=$('eca-app').value;saveData();closeModal();renderCredits();showToast('Action updated','success');});
+  }));
+
+  // Customer select
+  const sel=$('credit-customer-select-y9z0');
+  sel.innerHTML='<option value="">Select customer…</option>'+DATA.customers.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');
+
+  // Credit history
+  const hist=$('credit-history-g7h8');
+  if(DATA.creditHistory.length===0){hist.innerHTML='<p class="text-xs text-gray-500">No credit adjustments yet.</p>';}
+  else{
+    hist.innerHTML=DATA.creditHistory.slice(-10).reverse().map(h=>'<div class="flex justify-between items-center text-xs bg-card2 rounded-lg p-3"><span class="text-white">'+h.customerName+'</span><span class="'+(h.amount>0?'text-success':'text-danger')+' tabular-nums">'+(h.amount>0?'+':'')+h.amount+'</span><span class="text-gray-500">'+h.reason+'</span><span class="text-gray-600">'+fmtDate(h.date)+'</span></div>').join('');
+  }
+
+  // Stats
+  const totalIssued = DATA.creditHistory.filter(h=>h.amount>0).reduce((s,h)=>s+h.amount,0) + DATA.customers.reduce((s,c)=>s+(c.credits===-1?0:c.credits),0);
+  const totalConsumed = DATA.creditHistory.filter(h=>h.amount<0).reduce((s,h)=>s+Math.abs(h.amount),0);
+  const remaining = DATA.customers.reduce((s,c)=>s+(c.credits===-1?0:c.credits),0);
+  const avg = DATA.customers.length?Math.round(remaining/DATA.customers.length):0;
+  $('cs-issued-i9j0').textContent=totalIssued.toLocaleString();
+  $('cs-consumed-k1l2').textContent=totalConsumed.toLocaleString();
+  $('cs-remaining-m3n4').textContent=remaining.toLocaleString();
+  $('cs-avg-o5p6').textContent=avg.toLocaleString();
+}
+
+$('apply-credit-e5f6').addEventListener('click',()=>{
+  const custId=$('credit-customer-select-y9z0').value;
+  const amount=Number($('credit-amount-a1b2').value);
+  const reason=$('credit-reason-c3d4').value||'Manual adjustment';
+  if(!custId){showToast('Select a customer','error');return;}
+  if(!amount){showToast('Enter an amount','error');return;}
+  const cust=DATA.customers.find(c=>c.id===custId);
+  if(!cust)return;
+  if(cust.credits!==-1) cust.credits=Math.max(0,cust.credits+amount);
+  DATA.creditHistory.push({customerId:custId,customerName:cust.name,amount,reason,date:new Date().toISOString().split('T')[0]});
+  $('credit-amount-a1b2').value='';$('credit-reason-c3d4').value='';
+  saveData();renderCredits();showToast('Credits applied to '+cust.name,'success');
+});
+
+$('add-credit-action-u5v6').addEventListener('click',()=>{
+  showModal('<h3 class="text-lg font-display text-white mb-4">Add Credit Action</h3><div class="space-y-3"><div><label class="text-xs text-gray-500 block mb-1">Action Name</label><input class="form-input" id="nca-action" /></div><div><label class="text-xs text-gray-500 block mb-1">Credits Used</label><input class="form-input" type="number" id="nca-credits" /></div><div><label class="text-xs text-gray-500 block mb-1">App</label><select class="form-input" id="nca-app">'+DATA.apps.map(a=>'<option>'+a.name+'</option>').join('')+'</select></div><div class="flex gap-3 mt-4"><button class="btn-amber text-sm" id="nca-save">Add</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div></div>');
+  $('nca-save').addEventListener('click',()=>{
+    const action=$('nca-action').value,credits=Number($('nca-credits').value),app=$('nca-app').value;
+    if(!action){showToast('Name required','error');return;}
+    DATA.creditActions.push({id:uid('ca'),action,credits,app});saveData();closeModal();renderCredits();showToast('Action added','success');
+  });
+});
+
+// ═══════════════════════ LICENSES ═══════════════════════
+function renderLicenses(){
+  // Populate dropdowns
+  $('lic-product-q7r8').innerHTML=DATA.apps.map(a=>'<option>'+a.name+'</option>').join('');
+  $('lic-customer-s9t0').innerHTML=DATA.customers.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');
+  // Table
+  const ct=$('licenses-table-e1f2');
+  if(DATA.licenses.length===0){ct.innerHTML='<div class="empty-state"><p>🔑</p><p>No licenses generated yet.</p></div>';return;}
+  let h='<table class="data-table"><thead><tr><th>License Key</th><th>Customer</th><th>Product</th><th>Type</th><th>Activations</th><th>Status</th><th>Expiry</th><th>Actions</th></tr></thead><tbody>';
+  DATA.licenses.forEach((l,i)=>{
+    const badge = l.status==='Active'?'badge-active':l.status==='Expired'?'badge-expired':l.status==='Revoked'?'badge-revoked':'badge-trial';
+    h+='<tr><td class="font-mono text-xs text-amber break-all">'+l.key+'</td><td class="text-white">'+l.customerName+'</td><td class="text-xs">'+l.product+'</td>';
+    h+='<td><span class="badge '+(l.type==='Trial'?'badge-trial':'badge-active')+'">'+l.type+'</span></td>';
+    h+='<td class="tabular-nums">'+l.activations+'/'+l.maxActivations+'</td>';
+    h+='<td><span class="badge '+badge+'">'+l.status+'</span></td>';
+    h+='<td>'+l.expiry+'</td>';
+    h+='<td class="flex gap-1 flex-wrap"><button class="text-amber text-xs hover:underline" data-copy-lic="'+i+'">Copy</button>';
+    if(l.status==='Active')h+='<button class="text-danger text-xs hover:underline" data-revoke-lic="'+i+'">Revoke</button>';
+    h+='</td></tr>';
+  });
+  h+='</tbody></table>';
+  ct.innerHTML=h;
+  $$('[data-copy-lic]').forEach(b=>b.addEventListener('click',()=>{
+    const key=DATA.licenses[Number(b.dataset.copyLic)].key;
+    navigator.clipboard.writeText(key).then(()=>showToast('Key copied!','success')).catch(()=>showToast(key,'info'));
+  }));
+  $$('[data-revoke-lic]').forEach(b=>b.addEventListener('click',()=>{
+    DATA.licenses[Number(b.dataset.revokeLic)].status='Revoked';saveData();renderLicenses();showToast('License revoked','info');
+  }));
+}
+
+$('generate-license-btn-c9d0').addEventListener('click',()=>{
+  const product=$('lic-product-q7r8').value;
+  const custId=$('lic-customer-s9t0').value;
+  const cust=DATA.customers.find(c=>c.id===custId);
+  if(!cust){showToast('Select a customer','error');return;}
+  const type=$('lic-type-u1v2').value;
+  const maxAct=$('lic-activations-w3x4').value;
+  const expiry=$('lic-expiry-y5z6').value==='Never'?'Never':new Date(Date.now()+30*86400000).toISOString().split('T')[0];
+  DATA.licenses.push({key:genLicenseKey(),customerId:custId,customerName:cust.name,product,type,activations:'0',maxActivations:maxAct,status:type==='Trial'?'Active':'Active',expiry,notes:$('lic-notes-a7b8').value});
+  saveData();renderLicenses();showToast('License generated!','success');
+  $('lic-notes-a7b8').value='';
+});
+
+$('validate-key-btn-i5j6').addEventListener('click',()=>{
+  const key=$('validate-key-input-g3h4').value.trim().toUpperCase();
+  const result=$('validate-result-k7l8');
+  const lic=DATA.licenses.find(l=>l.key===key);
+  if(!lic){result.innerHTML='<div class="bg-danger/10 border border-danger/30 rounded-lg p-4 text-sm"><span class="text-danger font-bold">❌ INVALID</span><p class="text-gray-400 mt-1">No license found for this key.</p></div>';return;}
+  const badge=lic.status==='Active'?'badge-active':lic.status==='Expired'?'badge-expired':'badge-revoked';
+  result.innerHTML='<div class="bg-success/10 border border-success/30 rounded-lg p-4 text-sm"><span class="text-success font-bold">✅ VALID</span><div class="grid grid-cols-2 gap-2 mt-3 text-xs"><span class="text-gray-500">Customer</span><span class="text-white">'+lic.customerName+'</span><span class="text-gray-500">Product</span><span>'+lic.product+'</span><span class="text-gray-500">Type</span><span>'+lic.type+'</span><span class="text-gray-500">Activations</span><span>'+lic.activations+'/'+lic.maxActivations+'</span><span class="text-gray-500">Status</span><span class="badge '+badge+'">'+lic.status+'</span><span class="text-gray-500">Expiry</span><span>'+lic.expiry+'</span></div></div>';
+});
+
+// ═══════════════════════ ANALYTICS ═══════════════════════
+function renderAnalytics(){
+  const totalRev = DATA.orders.filter(o=>o.status==='Completed').reduce((s,o)=>s+o.total,0);
+  const activeSubs = DATA.licenses.filter(l=>l.status==='Active'&&l.type==='Subscription').length;
+  const newCust = DATA.customers.length;
+  const creditsConsumed = DATA.creditHistory.filter(h=>h.amount<0).reduce((s,h)=>s+Math.abs(h.amount),0);
+  $('an-revenue-o1p2').textContent=fmtMoney(totalRev);
+  $('an-subs-q3r4').textContent=activeSubs;
+  $('an-newcust-s5t6').textContent=newCust;
+  $('an-creditscon-u7v8').textContent=creditsConsumed.toLocaleString();
+
+  // Revenue line chart
+  drawRevenueChart();
+  // Product donut
+  drawProductChart();
+  // Plans bar
+  drawPlansChart();
+  // Best selling
+  renderBestSelling();
+}
+
+function drawRevenueChart(){
+  const canvas=$('chart-revenue-w9x0');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width=canvas.parentElement.clientWidth-40;
+  const h=canvas.height=200;
+  ctx.clearRect(0,0,w,h);
+  // Generate monthly data from orders
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'];
+  const values=[0,0,0,0,0,0,0,0];
+  DATA.orders.filter(o=>o.status==='Completed').forEach(o=>{
+    const d=new Date(o.date);const m=d.getMonth();
+    if(m<8) values[m]+=o.total;
+  });
+  // If all zero, show sample curve
+  if(values.every(v=>v===0)){for(let i=0;i<8;i++)values[i]=[120,280,350,520,680,840,1100,1450][i];}
+  const maxV=Math.max(...values,1);
+  const padL=50,padB=30,padT=20;
+  const cw=w-padL-20,ch=h-padB-padT;
+  // Grid
+  ctx.strokeStyle='#222';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=padT+ch*(1-i/4);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(w-20,y);ctx.stroke();
+    ctx.fillStyle='#555';ctx.font='10px Inter';ctx.textAlign='right';
+    ctx.fillText('$'+Math.round(maxV*i/4),padL-8,y+3);
+  }
+  // Labels
+  ctx.fillStyle='#666';ctx.textAlign='center';ctx.font='10px Inter';
+  months.forEach((m,i)=>{ctx.fillText(m,padL+cw*i/(months.length-1),h-8);});
+  // Line
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();
+  values.forEach((v,i)=>{
+    const x=padL+cw*i/(values.length-1);
+    const y=padT+ch*(1-v/maxV);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // Fill
+  ctx.lineTo(padL+cw,padT+ch);ctx.lineTo(padL,padT+ch);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,padT,0,h);
+  grad.addColorStop(0,'rgba(245,158,11,0.25)');grad.addColorStop(1,'rgba(245,158,11,0)');
+  ctx.fillStyle=grad;ctx.fill();
+  // Dots
+  values.forEach((v,i)=>{
+    const x=padL+cw*i/(values.length-1);
+    const y=padT+ch*(1-v/maxV);
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#f59e0b';ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle='#111';ctx.fill();
+  });
+}
+
+function drawProductChart(){
+  const canvas=$('chart-product-y1z2');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width=canvas.parentElement.clientWidth-40;
+  const h=canvas.height=200;
+  ctx.clearRect(0,0,w,h);
+  const prodRev={};
+  DATA.orders.filter(o=>o.status==='Completed').forEach(o=>{o.products.forEach(p=>{prodRev[p]=(prodRev[p]||0)+o.total/o.products.length;});});
+  let entries=Object.entries(prodRev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(entries.length===0)entries=[['CreatorForge AI',450],['QuantumSell AI',380],['PromptForge AI',290],['InfluenceForge AI',220],['Taxi-Cab App',160]];
+  const total=entries.reduce((s,e)=>s+e[1],0);
+  const colors=['#f59e0b','#d97706','#b45309','#92400e','#78350f'];
+  const cx=w/2-60,cy=h/2,r=70;
+  let angle=-Math.PI/2;
+  entries.forEach(([name,val],i)=>{
+    const slice=Math.PI*2*(val/total);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+slice);ctx.closePath();
+    ctx.fillStyle=colors[i%colors.length];ctx.fill();
+    angle+=slice;
+  });
+  // Inner circle (donut)
+  ctx.beginPath();ctx.arc(cx,cy,40,0,Math.PI*2);ctx.fillStyle='#111';ctx.fill();
+  // Legend
+  const lx=cx+r+30;
+  entries.forEach(([name,val],i)=>{
+    const ly=30+i*28;
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fillRect(lx,ly,10,10);
+    ctx.fillStyle='#ccc';ctx.font='10px Inter';ctx.textAlign='left';
+    const pct=Math.round(val/total*100);
+    ctx.fillText(name.substring(0,18)+' '+pct+'%',lx+16,ly+9);
+  });
+}
+
+function drawPlansChart(){
+  const canvas=$('chart-plans-c5d6');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width=canvas.parentElement.clientWidth-40;
+  const h=canvas.height=160;
+  ctx.clearRect(0,0,w,h);
+  const plans=['Starter','Pro','Enterprise'];
+  const counts=plans.map(p=>DATA.customers.filter(c=>c.plan===p).length);
+  const maxC=Math.max(...counts,1);
+  const barW=Math.min(60,(w-80)/3);
+  const padB=30,padT=20,ch=h-padB-padT;
+  const colors=['#d97706','#f59e0b','#fbbf24'];
+  plans.forEach((p,i)=>{
+    const x=40+i*(barW+30);
+    const barH=(counts[i]/maxC)*ch;
+    const y=padT+ch-barH;
+    ctx.fillStyle=colors[i];
+    ctx.beginPath();
+    const cr=4;
+    ctx.moveTo(x+cr,y);ctx.lineTo(x+barW-cr,y);ctx.quadraticCurveTo(x+barW,y,x+barW,y+cr);
+    ctx.lineTo(x+barW,padT+ch);ctx.lineTo(x,padT+ch);ctx.lineTo(x,y+cr);ctx.quadraticCurveTo(x,y,x+cr,y);
+    ctx.fill();
+    // Label
+    ctx.fillStyle='#888';ctx.font='10px Inter';ctx.textAlign='center';
+    ctx.fillText(p,x+barW/2,h-8);
+    ctx.fillStyle='#fff';ctx.font='bold 12px Inter';
+    ctx.fillText(counts[i],x+barW/2,y-6);
+  });
+}
+
+function renderBestSelling(){
+  const prodRev={};const prodUnits={};
+  DATA.orders.filter(o=>o.status==='Completed').forEach(o=>{o.products.forEach(p=>{prodRev[p]=(prodRev[p]||0)+o.total/o.products.length;prodUnits[p]=(prodUnits[p]||0)+1;});});
+  let entries=Object.entries(prodRev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const totalR=entries.reduce((s,e)=>s+e[1],0);
+  const ct=$('an-bestselling-a3b4');
+  if(entries.length===0){ct.innerHTML='<div class="empty-state text-xs"><p>No sales data yet.</p></div>';return;}
+  let h='<table class="data-table"><thead><tr><th>#</th><th>Product</th><th>Units</th><th>Revenue</th><th>%</th></tr></thead><tbody>';
+  entries.forEach(([name,val],i)=>{
+    h+='<tr><td class="text-amber">'+(i+1)+'</td><td class="text-white text-xs">'+name+'</td><td class="tabular-nums">'+(prodUnits[name]||0)+'</td><td class="tabular-nums">'+fmtMoney(val)+'</td><td class="tabular-nums">'+Math.round(val/totalR*100)+'%</td></tr>';
+  });
+  h+='</tbody></table>';
+  ct.innerHTML=h;
+}
+
+// CSV Exports
+$('export-revenue-csv-e7f8').addEventListener('click',()=>downloadCSV('revenue',['OrderID','Customer','Amount','Status','Date'],DATA.orders.map(o=>[o.id,o.customerName,o.total,o.status,o.date])));
+$('export-customers-csv-g9h0').addEventListener('click',()=>downloadCSV('customers',['ID','Name','Email','Plan','Credits','Status'],DATA.customers.map(c=>[c.id,c.name,c.email,c.plan,c.credits===-1?'Unlimited':c.credits,c.status])));
+$('export-orders-csv-i1j2').addEventListener('click',()=>downloadCSV('orders',['OrderID','Customer','Products','Total','Payment','Status','Date'],DATA.orders.map(o=>[o.id,o.customerName,o.products.join(';'),o.total,o.paymentMethod,o.status,o.date])));
+
+function downloadCSV(name,headers,rows){
+  let csv=headers.join(',')+'\n';
+  rows.forEach(r=>{csv+=r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')+'\n';});
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='getbusytech_'+name+'_'+Date.now()+'.csv';a.click();
+  showToast(name+' CSV exported','success');
+}
+
+// ═══════════════════════ SETTINGS ═══════════════════════
+function renderSettings(){
+  const s=DATA.settings;
+  $('set-name-k3l4').value=s.platformName||'  ForgeCore Industries';
+  $('set-owner-m5n6').value=s.ownerName||' ForgeCore Industries';
+  $('set-email-o7p8').value=s.email||'';
+  $('set-currency-q9r0').value=s.currency||'USD';
+  $('set-color-y7z8').value=s.primaryColor||'#f59e0b';
+  $('set-receipt-name-a9b0').value=s.receiptName||' ForgeCore Industries';
+  $('set-receipt-footer-c1d2').value=s.receiptFooter||'Thank you for your business!';
+  $('set-inv-prefix-e3f4').value=s.invoicePrefix||'ORD-';
+  $('set-lic-prefix-g5h6').value=s.licensePrefix||'FCIND-';
+  // Storage usage
+  const bytes=new Blob([localStorage.getItem(STORAGE_KEY)||'']).size;
+  $('storage-usage-k9l0').textContent=(bytes/1024).toFixed(1)+' KB';
+}
+
+// Settings tabs
+$$('.settings-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    $$('.settings-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
+    $$('.settings-pane').forEach(p=>p.style.display='none');
+    const pane=$('settings-'+tab.dataset.settab);if(pane)pane.style.display='';
+  });
+});
+
+$('save-general-btn-w5x6').addEventListener('click',()=>{
+  DATA.settings.platformName=$('set-name-k3l4').value;
+  DATA.settings.ownerName=$('set-owner-m5n6').value;
+  DATA.settings.email=$('set-email-o7p8').value;
+  DATA.settings.currency=$('set-currency-q9r0').value;
+  DATA.settings.timezone=$('set-tz-s1t2').value;
+  DATA.settings.dateFormat=$('set-datefmt-u3v4').value;
+  saveData();showToast('General settings saved','success');
+});
+
+$('save-branding-btn-i7j8').addEventListener('click',()=>{
+  DATA.settings.primaryColor=$('set-color-y7z8').value;
+  DATA.settings.receiptName=$('set-receipt-name-a9b0').value;
+  DATA.settings.receiptFooter=$('set-receipt-footer-c1d2').value;
+  DATA.settings.invoicePrefix=$('set-inv-prefix-e3f4').value;
+  DATA.settings.licensePrefix=$('set-lic-prefix-g5h6').value;
+  saveData();showToast('Branding saved','success');
+});
+
+$('export-json-btn-m1n2').addEventListener('click',exportJSON);
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='getbusytech_backup_'+Date.now()+'.json';a.click();
+  showToast('Data exported','success');
+}
+
+$('import-json-input-q5r6').addEventListener('change',function(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{DATA=JSON.parse(ev.target.result);saveData();showToast('Data imported successfully!','success');renderPage(currentPage);}
+    catch(err){showToast('Invalid JSON file','error');}
+  };
+  reader.readAsText(file);
+});
+
+$('clear-data-btn-s7t8').addEventListener('click',()=>{
+  showModal('<h3 class="text-lg font-display text-white mb-4">⚠️ Clear All Data</h3><p class="text-sm text-gray-400 mb-4">This will permanently delete all platform data. Type <span class="text-danger font-bold">DELETE</span> to confirm.</p><input class="form-input" id="cd-confirm" placeholder="Type DELETE…" /><div class="flex gap-3 mt-4"><button class="btn-danger text-sm" id="cd-go">Clear Everything</button><button class="btn-outline text-sm" data-close-modal>Cancel</button></div>');
+  $('cd-go').addEventListener('click',()=>{
+    if($('cd-confirm').value!=='DELETE'){showToast('Type DELETE to confirm','error');return;}
+    localStorage.removeItem(STORAGE_KEY);
+    initData();closeModal();renderPage(currentPage);showToast('All data cleared','info');
+  });
+});
+
+// Security
+$('save-pin-btn-w1x2').addEventListener('click',()=>{
+  const pin=$('set-pin-u9v0').value;
+  if(pin&&pin.length!==4){showToast('PIN must be 4 digits','error');return;}
+  DATA.settings.pin=pin;saveData();showToast(pin?'PIN set':'PIN removed','success');
+});
+
+$('lock-now-btn-y3z4').addEventListener('click',()=>{
+  if(!DATA.settings.pin){showToast('Set a PIN first','error');return;}
+  $('lock-screen-a1b2').style.display='flex';
+});
+
+$('save-security-btn-c7d8').addEventListener('click',()=>{
+  DATA.settings.sessionTimeout=$('set-timeout-a5b6').value;
+  saveData();showToast('Security settings saved','success');
+});
+
+// Lock screen
+$('lock-unlock-btn-e5f6').addEventListener('click',()=>{
+  if($('lock-pin-input-c3d4').value===DATA.settings.pin){
+    $('lock-screen-a1b2').style.display='none';$('lock-pin-input-c3d4').value='';
+    $('lock-error-g7h8').style.display='none';
+  } else {
+    $('lock-error-g7h8').style.display='block';
+  }
+});
+
+// ═══════════════════════ GLOBAL SEARCH ═══════════════════════
+$('global-search-btn-y5z6').addEventListener('click',()=>{
+  $('global-search-overlay-a2b3').classList.remove('hidden');
+  $('global-search-overlay-a2b3').style.display='flex';
+  $('global-search-input-c4d5').value='';
+  $('global-search-input-c4d5').focus();
+  $('global-search-results-g8h9').innerHTML='<p class="text-xs text-gray-500 text-center py-4">Start typing to search…</p>';
+});
+$('global-search-close-e6f7').addEventListener('click',()=>{$('global-search-overlay-a2b3').style.display='none';});
+$('global-search-overlay-a2b3').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+
+$('global-search-input-c4d5').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  const res=$('global-search-results-g8h9');
+  if(!q){res.innerHTML='<p class="text-xs text-gray-500 text-center py-4">Start typing to search…</p>';return;}
+  let html='';
+  // Search customers
+  DATA.customers.filter(c=>c.name.toLowerCase().includes(q)||c.email.toLowerCase().includes(q)).slice(0,3).forEach(c=>{
+    html+='<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800/50 cursor-pointer text-sm search-result" data-goto="customers"><span class="text-amber">👤</span><span class="text-white">'+c.name+'</span><span class="text-gray-500 text-xs">'+c.email+'</span></div>';
+  });
+  // Search orders
+  DATA.orders.filter(o=>o.id.toLowerCase().includes(q)||o.customerName.toLowerCase().includes(q)).slice(0,3).forEach(o=>{
+    html+='<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800/50 cursor-pointer text-sm search-result" data-goto="orders"><span class="text-amber">🧾</span><span class="text-white font-mono text-xs">'+o.id+'</span><span class="text-gray-500 text-xs">'+o.customerName+'</span></div>';
+  });
+  // Search products
+  [...DATA.apps,...DATA.packs].filter(p=>p.name.toLowerCase().includes(q)).slice(0,3).forEach(p=>{
+    html+='<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800/50 cursor-pointer text-sm search-result" data-goto="products"><span class="text-amber">📦</span><span class="text-white">'+p.name+'</span></div>';
+  });
+  if(!html) html='<p class="text-xs text-gray-500 text-center py-4">No results found.</p>';
+  res.innerHTML=html;
+  res.querySelectorAll('.search-result').forEach(r=>{
+    r.addEventListener('click',()=>{
+      $('global-search-overlay-a2b3').style.display='none';
+      navigateTo(r.dataset.goto);
+    });
+  });
+});
+
+// ═══════════════════════ INIT ═══════════════════════
+const isFirstRun = initData();
+
+// Check lock screen
+if(DATA.settings.pin){
+  $('lock-screen-a1b2').style.display='flex';
+}
+
+// Render initial page
+renderDashboard();
+
+if(isFirstRun){
+  setTimeout(()=>showToast('Welcome! Platform initialized with sample data.','info'),500);
+}
+
+// Lucide icons
+if(typeof lucide!=="undefined"&&typeof lucide.createIcons==="function"){lucide.createIcons();}
+
+// Color picker live preview
+const colorPicker = $('set-color-y7z8');
+if(colorPicker){
+  colorPicker.addEventListener('input',function(){
+    const span = this.parentElement.querySelector('span');
+    if(span) span.textContent = this.value;
+  });
+}
+
+// Re-draw charts on window resize
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{if(currentPage==='analytics')renderAnalytics();},250);
+});
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
