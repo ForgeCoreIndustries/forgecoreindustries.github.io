@@ -898,9 +898,9 @@ const DEFAULT_PACKS = [
 ];
 
 const DEFAULT_CUSTOMERS = [
-  {id:'GBT-SK001',name:'Sarah K.',email:'sarah@example.com',phone:'',plan:'Pro',credits:8340,licenses:3,joinDate:'2026-06-15',status:'Active',notes:'Power user'},
-  {id:'GBT-MT002',name:'Marcus T.',email:'marcus@example.com',phone:'',plan:'Enterprise',credits:-1,licenses:5,joinDate:'2026-05-20',status:'Active',notes:'Enterprise client'},
-  {id:'GBT-PR003',name:'Priya R.',email:'priya@example.com',phone:'',plan:'Starter',credits:650,licenses:1,joinDate:'2026-07-01',status:'Active',notes:''}
+  {id:'FCI-SK001',name:'Sarah K.',email:'sarah@example.com',phone:'',plan:'Pro',credits:8340,licenses:3,joinDate:'2026-06-15',status:'Active',notes:'Power user'},
+  {id:'FCI-MT002',name:'Marcus T.',email:'marcus@example.com',phone:'',plan:'Enterprise',credits:-1,licenses:5,joinDate:'2026-05-20',status:'Active',notes:'Enterprise client'},
+  {id:'FCI-PR003',name:'Priya R.',email:'priya@example.com',phone:'',plan:'Starter',credits:650,licenses:1,joinDate:'2026-07-01',status:'Active',notes:''}
 ];
 
 const DEFAULT_CREDIT_ACTIONS = [
@@ -941,9 +941,9 @@ function initData(){
       {id:'ORD-G7H8I9',customerId:'GBT-PR003',customerName:'Priya R.',products:['PromptForge AI'],amount:19,discount:0,total:19,paymentMethod:'Cash',status:'Pending',date:'2026-08-14',notes:''}
     ],
     licenses: [
-      {key:'GBTECH-AK47-BM29-CX03-DL91',customerId:'GBT-SK001',customerName:'Sarah K.',product:'CreatorForge AI',type:'Subscription',activations:'3',maxActivations:'5',status:'Active',expiry:'Never',notes:''},
-      {key:'GBTECH-FG12-HJ34-KL56-MN78',customerId:'GBT-MT002',customerName:'Marcus T.',product:'QuantumSell AI',type:'Perpetual',activations:'2',maxActivations:'Unlimited',status:'Active',expiry:'Never',notes:'Enterprise'},
-      {key:'GBTECH-PQ90-RS12-TU34-VW56',customerId:'GBT-PR003',customerName:'Priya R.',product:'PromptForge AI',type:'Trial',activations:'1',maxActivations:'1',status:'Active',expiry:'2026-09-14',notes:'30-day trial'}
+      {key:'FORGE-AK47-BM29-CX03-DL91',customerId:'FCI-SK001',customerName:'Sarah K.',product:'CreatorForge AI',type:'Subscription',activations:'3',maxActivations:'5',status:'Active',expiry:'Never',notes:''},
+      {key:'FORGE-FG12-HJ34-KL56-MN78',customerId:'FCT-MT002',customerName:'Marcus T.',product:'QuantumSell AI',type:'Perpetual',activations:'2',maxActivations:'Unlimited',status:'Active',expiry:'Never',notes:'Enterprise'},
+      {key:'FORGE-PQ90-RS12-TU34-VW56',customerId:'FCI-PR003',customerName:'Priya R.',product:'PromptForge AI',type:'Trial',activations:'1',maxActivations:'1',status:'Active',expiry:'2026-09-14',notes:'30-day trial'}
     ],
     creditPlans: JSON.parse(JSON.stringify(DEFAULT_PLANS)),
     creditActions: JSON.parse(JSON.stringify(DEFAULT_CREDIT_ACTIONS)),
