@@ -114,7 +114,7 @@ input,select,textarea { font-family: 'Inter', sans-serif; }
 <div data-id="2" id="lock-screen-a1b2" class="lock-screen" style="display:none;">
   <div data-id="3" class="text-center">
     <div data-id="4" class="w-16 h-16 rounded-full bg-amber flex items-center justify-center mx-auto mb-6">
-      <span data-id="5" class="text-2xl font-bold text-black font-display">GT</span>
+      <span data-id="5" class="text-2xl font-bold text-black font-display">FC</span>
     </div>
     <h2 data-id="6" class="text-xl font-display text-white mb-2"> ForgeCore Industries — Locked</h2>
     <p data-id="7" class="text-sm text-gray-400 mb-6">Enter your 4-digit PIN to unlock</p>
@@ -824,12 +824,12 @@ input,select,textarea { font-family: 'Inter', sans-serif; }
 document.addEventListener('DOMContentLoaded', function(){
 
 // ═══════════════════════ UTILITY FUNCTIONS ═══════════════════════
-const STORAGE_KEY = 'getbusytech_platform_data';
+const STORAGE_KEY = 'forgecore_platform_data';
 const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 function uid(prefix=''){return prefix+Math.random().toString(36).substr(2,6).toUpperCase();}
 function genOrderId(){return 'ORD-'+Math.random().toString(36).substr(2,6).toUpperCase();}
-function genCustomerId(){return 'GBT-'+Math.random().toString(36).substr(2,5).toUpperCase();}
+function genCustomerId(){return 'FC-'+Math.random().toString(36).substr(2,5).toUpperCase();}
 function genLicenseKey(){const s=()=>{let r='';for(let i=0;i<4;i++)r+='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)];return r;};return 'GBTECH-'+s()+'-'+s()+'-'+s()+'-'+s();}
 function fmtMoney(n){return '$'+Number(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function fmtDate(d){if(!d)return '';const dt=new Date(d);return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();}
@@ -936,9 +936,9 @@ function initData(){
     packs: JSON.parse(JSON.stringify(DEFAULT_PACKS)),
     customers: JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS)),
     orders: [
-      {id:'ORD-A1B2C3',customerId:'GBT-SK001',customerName:'Sarah K.',products:['CreatorForge AI','AI Video Script Pack'],amount:63,discount:0,total:63,paymentMethod:'Internal Manual',status:'Completed',date:'2026-08-10',notes:''},
-      {id:'ORD-D4E5F6',customerId:'GBT-MT002',customerName:'Marcus T.',products:['QuantumSell AI','AI Funnel Builder Pack','AI Lead Generation Pack'],amount:137,discount:10,total:127,paymentMethod:'Bank Transfer',status:'Completed',date:'2026-08-12',notes:'Enterprise discount applied'},
-      {id:'ORD-G7H8I9',customerId:'GBT-PR003',customerName:'Priya R.',products:['PromptForge AI'],amount:19,discount:0,total:19,paymentMethod:'Cash',status:'Pending',date:'2026-08-14',notes:''}
+      {id:'ORD-A1B2C3',customerId:'FC-SK001',customerName:'Sarah K.',products:['CreatorForge AI','AI Video Script Pack'],amount:63,discount:0,total:63,paymentMethod:'Internal Manual',status:'Completed',date:'2026-08-10',notes:''},
+      {id:'ORD-D4E5F6',customerId:'FC-MT002',customerName:'Marcus T.',products:['QuantumSell AI','AI Funnel Builder Pack','AI Lead Generation Pack'],amount:137,discount:10,total:127,paymentMethod:'Bank Transfer',status:'Completed',date:'2026-08-12',notes:'Enterprise discount applied'},
+      {id:'ORD-G7H8I9',customerId:'FC-PR003',customerName:'Priya R.',products:['PromptForge AI'],amount:19,discount:0,total:19,paymentMethod:'Cash',status:'Pending',date:'2026-08-14',notes:''}
     ],
     licenses: [
       {key:'FORGE-AK47-BM29-CX03-DL91',customerId:'FCI-SK001',customerName:'Sarah K.',product:'CreatorForge AI',type:'Subscription',activations:'3',maxActivations:'5',status:'Active',expiry:'Never',notes:''},
@@ -950,7 +950,7 @@ function initData(){
     creditHistory: [],
     settings: {
       platformName:' ForgeCore Industries',ownerName:' ForgeCore Industries',email:'',currency:'USD',timezone:'America/New_York (EDT)',dateFormat:'MM/DD/YYYY',
-      primaryColor:'#f59e0b',receiptName:' ForgeCore Industries',receiptFooter:'Thank you for your business!',invoicePrefix:'ORD-',licensePrefix:'GBTECH-',
+      primaryColor:'#f59e0b',receiptName:' ForgeCore Industries',receiptFooter:'Thank you for your business!',invoicePrefix:'ORD-',licensePrefix:'FORGE-',
       pin:'',sessionTimeout:'Never',
       integrations:{stripe:{connected:false,keys:{}},paypal:{connected:false,keys:{}},gumroad:{connected:false,keys:{}}}
     }
