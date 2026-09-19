@@ -1,4 +1,4 @@
-import { ForgeGrabber } from "./forgegrabber-client.js";
+import { ForgeGrabber } from "./js/forgegrabber-client.js";
 
 const out = document.getElementById("fgOutput");
 
