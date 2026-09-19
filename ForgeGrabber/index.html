@@ -1609,7 +1609,7 @@ document.getElementById("fgPingBtn").addEventListener("click", async () => {
     fgLog("Pinging ForgeGrabber engine...");
 
     try {
-        const res = await fetch("/api/forgegrabber/ping");
+        const res = await fetch("https://forgecoreindustries.com/api/forgegrabber/ping");
         const data = await res.json();
         fgLog(`Ping Response: ${data.message}`);
     } catch (err) {
@@ -1622,7 +1622,7 @@ document.getElementById("fgGrabBtn").addEventListener("click", async () => {
     fgLog("Running Grab Task...");
 
     try {
-        const res = await fetch("/api/forgegrabber/run-grab");
+        const res = await fetch("https://forgecoreindustries.com/api/forgegrabber/run-grab");
         const data = await res.json();
         fgLog(`Grab Task Started: ${data.status}`);
     } catch (err) {
@@ -1635,7 +1635,7 @@ document.getElementById("fgStatusBtn").addEventListener("click", async () => {
     fgLog("Checking ForgeGrabber status...");
 
     try {
-        const res = await fetch("/api/forgegrabber/status");
+        const res = await fetch("https://forgecoreindustries.com/api/forgegrabber/status");
         const data = await res.json();
         fgLog(`Status: ${data.state}`);
     } catch (err) {
@@ -1648,13 +1648,14 @@ document.getElementById("fgResultsBtn").addEventListener("click", async () => {
     fgLog("Fetching ForgeGrabber results...");
 
     try {
-        const res = await fetch("/api/forgegrabber/results");
+        const res = await fetch("https://forgecoreindustries.com/api/forgegrabber/results");
         const data = await res.json();
         fgLog(`Results:<br>${JSON.stringify(data.results, null, 2)}`);
     } catch (err) {
         fgLog("Results fetch failed: " + err);
     }
 });
+
 
 
 const scoringOutput = document.getElementById("scoringOutput");
